@@ -4,6 +4,7 @@ plugins {
     kotlin("jvm")
     id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.plugin.compose")
+    id("com.github.johnrengelman.shadow") version "7.1.2"  // Añadir esta línea
 }
 
 group = "com.example"
@@ -16,13 +17,20 @@ repositories {
 }
 
 dependencies {
-    // Note, if you develop a library, you should use compose.desktop.common.
-    // compose.desktop.currentOs should be used in launcher-sourceSet
-    // (in a separate module for demo project and in testMain).
-    // With compose.desktop.common you will also lose @Preview functionality
     implementation(compose.desktop.currentOs)
     implementation("org.xerial:sqlite-jdbc:3.41.2.2")
+}
 
+tasks {
+    shadowJar {
+        archiveBaseName.set("miAplicacion")
+        archiveClassifier.set("")
+        archiveVersion.set("")
+        mergeServiceFiles()
+        manifest {
+            attributes["Main-Class"] = "MainKt"  // Cambia esto si tu clase principal es diferente
+        }
+    }
 }
 
 compose.desktop {
@@ -31,7 +39,15 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "gestor de calificaciones"
-            packageVersion = "2.2.0"
+            packageVersion = "2.5.0"
+
+            // Referenciar el jar creado por el shadow plugin
+            includeAllModules = true
+
+            windows {
+                dirChooser = true
+                perUserInstall = true
+            }
         }
     }
 }
