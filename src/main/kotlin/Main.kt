@@ -7,23 +7,43 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import screens.OutputMain
-import screens.inputMain
+import screens.*
+import sql.SQLiteCRUD
+import sql.SQLiteconnection
 
 @Composable
 @Preview
 fun App() {
-    var primeraScreen by remember { mutableStateOf(true) }
+    var currentScreen by remember { mutableStateOf(1) }
 
-    if (primeraScreen) {
-        inputMain(onScreenChange = { primeraScreen = false })
-    } else {
-        OutputMain(onScreenChange = { primeraScreen = true })
+    // Cuando currentScreen cambia, cambiamos la pantalla
+    when (currentScreen) {
+        1 -> {
+            mainInputAlumno(onScreenChange = { currentScreen = it })
+        }
+
+        2 -> {
+            mainInputProfesor(onScreenChange = {currentScreen = it})
+        }
+
+        3 -> {
+            mainInputMateria(onScreenChange = {currentScreen = it})
+        }
+
+        4 -> {
+            mainInputNota(onScreenChange = {currentScreen = it})
+        }
+
+        5 -> {
+            mainOutput (onScreenChange = {currentScreen = it})
+        }
     }
 }
 
 fun main() = application {
     Window(onCloseRequest = ::exitApplication) {
+        val c = SQLiteCRUD()
+        c.clearAllTables()
         App()
     }
 }

@@ -144,7 +144,6 @@ class SQLiteCRUD {
         }
         return data
     }
-
     fun selectAlumnosD(dniA: String): List<List<Any>> {
         val data = mutableListOf<List<Any>>()
         val sql = """
@@ -180,6 +179,65 @@ class SQLiteCRUD {
                 }
             }
         }
+        return data
+    }
+    fun selectAlumnos(): List<List<Any>>{
+        val data = mutableListOf<List<Any>>()
+        val sql = "SELECT * FROM alumnos;"
+
+        SQLiteconnection.connect()?.use { conn ->
+            conn.prepareStatement(sql).use { pstmt ->
+                val resultSet = pstmt.executeQuery()
+                while (resultSet.next()){
+                    val row = listOf<Any>(
+                        resultSet.getString("nombreCompletoA"),
+                        resultSet.getString("dniA")
+                    )
+                    data.add(row)
+                }
+            }
+        }
+
+        return data
+    }
+
+    fun selectProfesores(): List<List<Any>>{
+        val data = mutableListOf<List<Any>>()
+        val sql = "SELECT * FROM profesores;"
+
+        SQLiteconnection.connect()?.use { conn ->
+            conn.prepareStatement(sql).use { pstmt ->
+                val resultSet = pstmt.executeQuery()
+                while (resultSet.next()){
+                    val row = listOf<Any>(
+                        resultSet.getString("nombreCompletoP"),
+                        resultSet.getString("dniP")
+                    )
+                    data.add(row)
+                }
+            }
+        }
+
+        return data
+    }
+
+    fun selectMaterias(): List<List<Any>>{
+        val data = mutableListOf<List<Any>>()
+        val sql = "SELECT * FROM materias;"
+
+        SQLiteconnection.connect()?.use { conn ->
+            conn.prepareStatement(sql).use { pstmt ->
+                val resultSet = pstmt.executeQuery()
+                while (resultSet.next()){
+                    val row = listOf<Any>(
+                        resultSet.getString("materia"),
+                        resultSet.getString("dniP")
+                    )
+                    data.add(row)
+                }
+            }
+        }
+
         return data
     }
 
