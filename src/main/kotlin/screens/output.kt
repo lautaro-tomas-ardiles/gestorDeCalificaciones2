@@ -17,6 +17,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import colors.*
@@ -201,25 +202,25 @@ fun search(
     onSearchByName: (String) -> Unit,
     onSearchByDNI: (String) -> Unit
 ) {
-    var search by remember { mutableStateOf("") }
+    var searchByName by remember { mutableStateOf("") }
+    var searchByDNI by remember { mutableStateOf("") }
 
     Row(
         modifier = Modifier
-            .padding(top = 30.dp, start = 0.dp)
+            .padding(vertical = 30.dp, horizontal = 20.dp)
             .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
         OutlinedTextField(
-            value = search,
-            onValueChange = {search = it},
+            value = searchByName,
+            onValueChange = { searchByName = it },
             label = {
                 Text(
-                    text = "Nombre o D.N.I del alumno...",
-                    fontSize = 24.sp
+                    text = "Nombre del alumno...",
+                    fontSize = MaterialTheme.typography.h6.fontSize
                 )
             },
-            modifier = Modifier
-                .fillMaxWidth(0.6f),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = blue,
                 unfocusedBorderColor = blue,
@@ -227,53 +228,89 @@ fun search(
                 unfocusedLabelColor = Color.LightGray
             ),
             textStyle = TextStyle(
-                fontSize = 20.sp,
+                fontSize = 17.sp,
                 color = Color.White
             ),
-            singleLine = true
+            singleLine = true,
+            shape = RoundedCornerShape(10.dp),
+            modifier = Modifier.weight(1f)
+                //.width(470.dp)
         )
-        Spacer(modifier = Modifier.padding(20.dp))
+        Spacer(modifier = Modifier.padding(14.5.dp))
 
-        Button(
+        OutlinedButton(
             onClick = {
-                onSearchByName(search)
+                onSearchByName(searchByName)
             },
-            modifier = Modifier
-                .height(50.dp)
-                .align(Alignment.CenterVertically),
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = black
+            shape = RoundedCornerShape(40.dp),
+            border = BorderStroke(
+                width = 2.dp,
+                color = blue
             ),
-            shape = RoundedCornerShape(100),
-            border = BorderStroke(3.dp, red)
-        ){
-            Text(
-                text = "Buscar por nombre",
-                fontSize = 20.sp,
-                color = Color.White
-            )
-        }
-        Spacer(modifier = Modifier.padding(20.dp))
+            colors = ButtonDefaults.outlinedButtonColors(
+                backgroundColor = Color.Transparent,
+            ),
+            content = {
+                Text(
+                    text = "Buscar por nombre",
+                    color = Color.White,
+                    fontSize = MaterialTheme.typography.h6.fontSize,
+                    fontWeight = FontWeight.Normal
+                )
+            },
+            modifier = Modifier.align(Alignment.CenterVertically)
+        )
 
-        Button(
-            onClick = {
-                onSearchByDNI(search)
+        Spacer(modifier = Modifier.padding(14.5.dp))
+
+        OutlinedTextField(
+            value = searchByDNI,
+            onValueChange = { searchByDNI = it },
+            label = {
+                Text(
+                    text = "D.N.I del alumno...",
+                    fontSize = MaterialTheme.typography.h6.fontSize
+                )
             },
-            modifier = Modifier
-                .height(50.dp)
-                .align(Alignment.CenterVertically),
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = black
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = blue,
+                unfocusedBorderColor = blue,
+                focusedLabelColor = Color.White,
+                unfocusedLabelColor = Color.LightGray
             ),
-            shape = RoundedCornerShape(100),
-            border = BorderStroke(3.dp, red)
-        ){
-            Text(
-                text = "Buscar por dni",
-                fontSize = 20.sp,
+            textStyle = TextStyle(
+                fontSize = 17.sp,
                 color = Color.White
-            )
-        }
+            ),
+            singleLine = true,
+            shape = RoundedCornerShape(10.dp),
+            modifier = Modifier.weight(1f)
+                //.width(470.dp)
+        )
+        Spacer(modifier = Modifier.padding(14.5.dp))
+
+        OutlinedButton(
+            onClick = {
+                onSearchByDNI(searchByDNI)
+            },
+            shape = RoundedCornerShape(40.dp),
+            border = BorderStroke(
+                width = 2.dp,
+                color = blue
+            ),
+            colors = ButtonDefaults.outlinedButtonColors(
+                backgroundColor = Color.Transparent,
+            ),
+            content = {
+                Text(
+                    text = "Buscar por dni",
+                    color = Color.White,
+                    fontSize = MaterialTheme.typography.h6.fontSize,
+                    fontWeight = FontWeight.Normal
+                )
+            },
+            modifier = Modifier.align(Alignment.CenterVertically)
+        )
     }
 }
 
@@ -281,30 +318,25 @@ fun search(
 fun textsOutPut(data: List<List<Any>>) {
     Column(
         modifier = Modifier
-            .padding(
-                top = 40.dp,
-                start = 30.dp
-            )
+            .padding(start = 30.dp)
             .fillMaxSize()
     ) {
         //indica como se disponen los datos
         Box(
             modifier = Modifier
                 .border(
-                    width = 3.dp,
+                    width = 2.dp,
                     color = red,
-                    shape = RoundedCornerShape(100)
+                    shape = RoundedCornerShape(10)
                 )
                 .padding(
-                    top = 10.dp,
-                    start = 20.dp,
-                    end = 20.dp,
-                    bottom = 10.dp
+                    vertical = 10.dp,
+                    horizontal = 20.dp
                 )
             ){
             Text(
                 text = "Nombre del alumno | nota | Nombre del profesor | materia",
-                fontSize = 27.sp,
+                fontSize = MaterialTheme.typography.h5.fontSize,
                 color = Color.White
             )
         }
@@ -315,20 +347,18 @@ fun textsOutPut(data: List<List<Any>>) {
                 Box(
                     modifier = Modifier
                         .border(
-                            width = 4.dp,
-                            color = blue,
-                            shape = RoundedCornerShape(100)
+                            width = 2.dp,
+                            color = orange,
+                            shape = RoundedCornerShape(10)
                         )
                         .padding(
-                            top = 10.dp,
-                            start = 20.dp,
-                            end = 20.dp,
-                            bottom = 10.dp
+                            vertical = 10.dp,
+                            horizontal = 20.dp
                         )
                 ) {
                     Text(
                         text = "${data[0]} | ${data[1]} | ${data[2]} | ${data[3]}",
-                        fontSize = 27.sp,
+                        fontSize = MaterialTheme.typography.h5.fontSize,
                         color = Color.White
                     )
                 }

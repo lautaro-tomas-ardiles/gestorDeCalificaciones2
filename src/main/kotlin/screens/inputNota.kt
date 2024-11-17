@@ -230,11 +230,13 @@ fun notaInputInsert() {
     val materias = crud.selectMaterias()
 
     Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(scroll)
+            .padding(vertical = 20.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+
     ) {
         OutlinedTextField(
             value = nota,
@@ -242,7 +244,7 @@ fun notaInputInsert() {
             label = {
                 Text(
                     text = "Nota del alumno...",
-                    fontSize = 20.sp
+                    fontSize = MaterialTheme.typography.h6.fontSize
                 )
             },
             colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -276,7 +278,7 @@ fun notaInputInsert() {
                 label = {
                     Text(
                         text = "Seleccione alumno...",
-                        fontSize = 20.sp
+                        fontSize = MaterialTheme.typography.h6.fontSize
                     )
                 },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -328,9 +330,10 @@ fun notaInputInsert() {
                 alumno.forEach { alumno ->
                     val nombreDelAlumno = alumno[0] as String
                     val dniDelAlumno = alumno[1] as String
-                    dniAlumno = dniDelAlumno
+
                     DropdownMenuItem(//los items
                         onClick = {
+                            dniAlumno = dniDelAlumno
                             selectedAlumno = "nombre: $nombreDelAlumno | dni: $dniDelAlumno"
                             expandedAlumno = false
                         }
@@ -359,7 +362,7 @@ fun notaInputInsert() {
                 label = {
                     Text(
                         text = "Seleccione profesor...",
-                        fontSize = 20.sp
+                        fontSize = MaterialTheme.typography.h6.fontSize
                     )
                 },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -411,15 +414,16 @@ fun notaInputInsert() {
                 profesores.forEach { profesor ->
                     val nombreDelProfesor = profesor[0] as String
                     val dniDelProfesor = profesor[1] as String
-                    dniProfesor = dniDelProfesor
+
                     DropdownMenuItem(//los items
                         onClick = {
-                            selectedProfesor = "nombre: $nombreDelProfesor | dni: $dniProfesor"
+                            dniProfesor = dniDelProfesor
+                            selectedProfesor = "nombre: $nombreDelProfesor | dni: $dniDelProfesor"
                             expandedProfesor = false
                         }
                     ) {
                         Text(
-                            text = "nombre: $nombreDelProfesor | dni: $dniProfesor",
+                            text = "nombre: $nombreDelProfesor | dni: $dniDelProfesor",
                             color = Color.White
                         )
                     }
@@ -442,7 +446,7 @@ fun notaInputInsert() {
                 label = {
                     Text(
                         text = "Seleccione materia...",
-                        fontSize = 20.sp
+                        fontSize = MaterialTheme.typography.h6.fontSize
                     )
                 },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -542,7 +546,7 @@ fun notaInputInsert() {
                 Text(
                     text = "Añadir",
                     color = Color.White,
-                    fontSize = 20.sp,
+                    fontSize = MaterialTheme.typography.h6.fontSize,
                     fontWeight = FontWeight.Normal
                 )
             }

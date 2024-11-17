@@ -218,10 +218,12 @@ fun profesorInputInsert() {
     val crud = SQLiteCRUD()
 
     Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
+            //.verticalScroll(scroll)
+            .padding(vertical = 20.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         OutlinedTextField(
             value = nombreDelProfesor,

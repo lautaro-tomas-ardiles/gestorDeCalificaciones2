@@ -29,7 +29,7 @@ fun inputTopAppBar() {
         title = {
             Text(
                 text = "Gestor de notas ",
-                fontSize = 24.sp,
+                fontSize = MaterialTheme.typography.h5.fontSize,
                 color = Color.Black,
                 fontWeight = FontWeight.Normal
             )
@@ -86,7 +86,7 @@ fun alumnoInputSubAppBar(onScreenChange: (Int) -> Unit) {
         ) {
             Text(
                 text = "Alumno",
-                fontSize = 20.sp
+                fontSize = MaterialTheme.typography.h6.fontSize
             )
         }
         //profesor
@@ -113,7 +113,7 @@ fun alumnoInputSubAppBar(onScreenChange: (Int) -> Unit) {
         ) {
             Text(
                 text = "Profesor",
-                fontSize = 20.sp,
+                fontSize = MaterialTheme.typography.h6.fontSize,
                 color = Color.White
             )
         }
@@ -141,7 +141,7 @@ fun alumnoInputSubAppBar(onScreenChange: (Int) -> Unit) {
         ) {
             Text(
                 text = "Materia",
-                fontSize = 20.sp,
+                fontSize = MaterialTheme.typography.h6.fontSize,
                 color = Color.White
             )
         }
@@ -169,7 +169,7 @@ fun alumnoInputSubAppBar(onScreenChange: (Int) -> Unit) {
         ) {
             Text(
                 text = "Nota",
-                fontSize = 20.sp,
+                fontSize = MaterialTheme.typography.h6.fontSize,
                 color = Color.White
             )
         }
@@ -205,7 +205,7 @@ fun alumnoInputSubAppBar(onScreenChange: (Int) -> Unit) {
         ) {
             Text(
                 text = "Búsqueda de datos",
-                fontSize = 20.sp,
+                fontSize = MaterialTheme.typography.h6.fontSize,
                 color = Color.White
             )
         }
@@ -221,10 +221,12 @@ fun alumnoInputInsert() {
     val crud = SQLiteCRUD()
 
     Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
+            //.verticalScroll(scroll)
+            .padding(vertical = 20.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ){
         OutlinedTextField(
             value = nombreDelAlumno,
@@ -232,7 +234,7 @@ fun alumnoInputInsert() {
             label = {
                 Text(
                     text = "Nombre del alumno...",
-                    fontSize = 20.sp
+                    fontSize = MaterialTheme.typography.h6.fontSize
                 )
             },
             colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -258,7 +260,7 @@ fun alumnoInputInsert() {
             label = {
                 Text(
                     text = "D.N.I del alumno...",
-                    fontSize = 20.sp
+                    fontSize = MaterialTheme.typography.h6.fontSize
                 )
             },
             colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -305,7 +307,7 @@ fun alumnoInputInsert() {
                 Text(
                     text = "Añadir",
                     color = Color.White,
-                    fontSize = 20.sp,
+                    fontSize = MaterialTheme.typography.h6.fontSize,
                     fontWeight = FontWeight.Normal
                 )
             }

@@ -39,7 +39,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "gestor de calificaciones"
-            packageVersion = "2.5.0"
+            packageVersion = "3.1.1"
 
             // Referenciar el jar creado por el shadow plugin
             includeAllModules = true

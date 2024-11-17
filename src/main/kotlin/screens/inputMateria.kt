@@ -66,7 +66,7 @@ fun materiaInputSubAppBar(onScreenChange: (Int) -> Unit) {
         ) {
             Text(
                 text = "Alumno",
-                fontSize = 20.sp,
+                fontSize = MaterialTheme.typography.h6.fontSize,
                 color = Color.White
             )
         }
@@ -94,7 +94,7 @@ fun materiaInputSubAppBar(onScreenChange: (Int) -> Unit) {
         ) {
             Text(
                 text = "Profesor",
-                fontSize = 20.sp,
+                fontSize = MaterialTheme.typography.h6.fontSize,
                 color = Color.White
             )
         }
@@ -138,7 +138,7 @@ fun materiaInputSubAppBar(onScreenChange: (Int) -> Unit) {
         ) {
             Text(
                 text = "Materia",
-                fontSize = 20.sp,
+                fontSize = MaterialTheme.typography.h6.fontSize,
                 color = Color.Black
             )
         }
@@ -166,7 +166,7 @@ fun materiaInputSubAppBar(onScreenChange: (Int) -> Unit) {
         ) {
             Text(
                 text = "Nota",
-                fontSize = 20.sp,
+                fontSize = MaterialTheme.typography.h6.fontSize,
                 color = Color.White
             )
         }
@@ -202,7 +202,7 @@ fun materiaInputSubAppBar(onScreenChange: (Int) -> Unit) {
         ) {
             Text(
                 text = "Búsqueda de datos",
-                fontSize = 20.sp,
+                fontSize = MaterialTheme.typography.h6.fontSize,
                 color = Color.White
             )
         }
@@ -220,10 +220,11 @@ fun materiaInputInsert() {
     val profesores = crud.selectProfesores()
 
     Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
+            .padding(vertical = 20.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         OutlinedTextField(
             value = nombreDeLaMateria,
@@ -231,7 +232,7 @@ fun materiaInputInsert() {
             label = {
                 Text(
                     text = "Nombre de la materia...",
-                    fontSize = 20.sp
+                    fontSize = MaterialTheme.typography.h6.fontSize
                 )
             },
             colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -265,7 +266,7 @@ fun materiaInputInsert() {
                 label = {
                     Text(
                         text = "Seleccione profesor...",
-                        fontSize = 20.sp
+                        fontSize = MaterialTheme.typography.h6.fontSize
                     )
                 },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -317,15 +318,16 @@ fun materiaInputInsert() {
                 profesores.forEach { profesor ->
                     val nombre = profesor[0] as String
                     val dni = profesor[1] as String
-                    dniProfesor = dni
+
                     DropdownMenuItem(//los items
                         onClick = {
-                            selectedProfesor = "nombre: $nombre | dni: $dniProfesor"
+                            dniProfesor = dni
+                            selectedProfesor = "nombre: $nombre | dni: $dni"
                             expanded = false
                         }
                     ) {
                         Text(
-                            text = "nombre: $nombre | dni: $dniProfesor",
+                            text = "nombre: $nombre | dni: $dni",
                             color = Color.White
                         )
                     }
@@ -361,7 +363,7 @@ fun materiaInputInsert() {
                 Text(
                     text = "Añadir",
                     color = Color.White,
-                    fontSize = 20.sp,
+                    fontSize = MaterialTheme.typography.h6.fontSize,
                     fontWeight = FontWeight.Normal
                 )
             }
