@@ -2,9 +2,7 @@
 
 package screens
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -66,7 +64,8 @@ fun notaInputSubAppBar(onScreenChange: (Int) -> Unit) {
         ) {
             Text(
                 text = "Alumno",
-                fontSize = 24.sp
+                fontSize = 20.sp,
+                color = Color.White
             )
         }
         //profesor
@@ -93,7 +92,8 @@ fun notaInputSubAppBar(onScreenChange: (Int) -> Unit) {
         ) {
             Text(
                 text = "Profesor",
-                fontSize = 24.sp
+                fontSize = 20.sp,
+                color = Color.White
             )
         }
         //materia
@@ -120,7 +120,8 @@ fun notaInputSubAppBar(onScreenChange: (Int) -> Unit) {
         ) {
             Text(
                 text = "Materia",
-                fontSize = 24.sp
+                fontSize = 20.sp,
+                color = Color.White
             )
         }
         //nota
@@ -163,7 +164,8 @@ fun notaInputSubAppBar(onScreenChange: (Int) -> Unit) {
         ) {
             Text(
                 text = "Nota",
-                fontSize = 24.sp
+                fontSize = 20.sp,
+                color = Color.Black
             )
         }
         //búsqueda de datos
@@ -198,7 +200,8 @@ fun notaInputSubAppBar(onScreenChange: (Int) -> Unit) {
         ) {
             Text(
                 text = "Búsqueda de datos",
-                fontSize = 24.sp
+                fontSize = 20.sp,
+                color = Color.White
             )
         }
     }
@@ -207,10 +210,15 @@ fun notaInputSubAppBar(onScreenChange: (Int) -> Unit) {
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun notaInputInsert() {
+    val scroll = rememberScrollState()
     var nota by remember { mutableStateOf("") }
+
     var selectedProfesor by remember { mutableStateOf("") }
     var selectedAlumno by remember { mutableStateOf("") }
     var selectedMateria by remember { mutableStateOf("") }
+
+    var dniProfesor by remember { mutableStateOf("") }
+    var dniAlumno by remember { mutableStateOf("") }
 
     var expandedProfesor by remember { mutableStateOf(false) }
     var expandedAlumno by remember { mutableStateOf(false) }
@@ -221,21 +229,19 @@ fun notaInputInsert() {
     val alumno = crud.selectAlumnos()
     val materias = crud.selectMaterias()
 
-    var dniProfesor = ""
-    var dniAlumno = ""
-
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(scroll)
     ) {
         OutlinedTextField(
             value = nota,
             onValueChange = { nota = it },
             label = {
                 Text(
-                    text = "Nombre de la materia...",
+                    text = "Nota del alumno...",
                     fontSize = 20.sp
                 )
             },
@@ -320,17 +326,17 @@ fun notaInputInsert() {
                     .background(black)
             ){
                 alumno.forEach { alumno ->
-                    val nombre = alumno[0] as String
-                    val dni = alumno[1] as String
+                    val nombreDelAlumno = alumno[0] as String
+                    val dniDelAlumno = alumno[1] as String
+                    dniAlumno = dniDelAlumno
                     DropdownMenuItem(//los items
                         onClick = {
-                            selectedAlumno = "nombre: $nombre | dni: $dni"
+                            selectedAlumno = "nombre: $nombreDelAlumno | dni: $dniDelAlumno"
                             expandedAlumno = false
-                            dniAlumno = dni
                         }
                     ) {
                         Text(
-                            text = "nombre: $nombre | dni: $dni",
+                            text = "nombre: $nombreDelAlumno | dni: $dniDelAlumno",
                             color = Color.White
                         )
                     }
@@ -403,17 +409,17 @@ fun notaInputInsert() {
                     .background(black)
             ){
                 profesores.forEach { profesor ->
-                    val nombre = profesor[0] as String
-                    val dni = profesor[1] as String
+                    val nombreDelProfesor = profesor[0] as String
+                    val dniDelProfesor = profesor[1] as String
+                    dniProfesor = dniDelProfesor
                     DropdownMenuItem(//los items
                         onClick = {
-                            selectedProfesor = "nombre: $nombre | dni: $dni"
+                            selectedProfesor = "nombre: $nombreDelProfesor | dni: $dniProfesor"
                             expandedProfesor = false
-                            dniProfesor = dni
                         }
                     ) {
                         Text(
-                            text = "nombre: $nombre | dni: $dni",
+                            text = "nombre: $nombreDelProfesor | dni: $dniProfesor",
                             color = Color.White
                         )
                     }
@@ -486,17 +492,17 @@ fun notaInputInsert() {
                     .background(black)
             ){
                 materias.forEach { materias ->
-                    val nombreM = materias[0] as String
-                    val dni = materias[1] as String
+                    val nombreDeLaMateria = materias[0] as String
+                    val dniDelProfesor = materias[1] as String
+
                     DropdownMenuItem(//los items
                         onClick = {
-                            selectedMateria = "nombre de la materia: $nombreM |  dni del profesor: $dni"
+                            selectedMateria = "nombre de la materia: $nombreDeLaMateria |  dni del profesor: $dniDelProfesor"
                             expandedMateria = false
-                            dniProfesor = dni
                         }
                     ) {
                         Text(
-                            text = "nombre: $nombreM | dni: $dni",
+                            text = "nombre de la materia: $nombreDeLaMateria |  dni del profesor: $dniDelProfesor",
                             color = Color.White
                         )
                     }
@@ -517,10 +523,10 @@ fun notaInputInsert() {
                     selectedAlumno = ""
                     selectedMateria = ""
                     selectedProfesor = ""
+                    nota = ""
 
                 }catch (e: Exception){
                     println(e.message)
-                    println(e.localizedMessage)
                     print(e.cause)
                 }
             },

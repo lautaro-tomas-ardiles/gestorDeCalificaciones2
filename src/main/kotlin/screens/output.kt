@@ -61,7 +61,8 @@ fun subOutputTopBar(onScreenChange: (Int) -> Unit) {
         ) {
             Text(
                 text = "Alumno",
-                fontSize = 24.sp
+                fontSize = 20.sp,
+                color = Color.White
             )
         }
         //profesor
@@ -88,7 +89,8 @@ fun subOutputTopBar(onScreenChange: (Int) -> Unit) {
         ) {
             Text(
                 text = "Profesor",
-                fontSize = 24.sp
+                fontSize = 20.sp,
+                color = Color.White
             )
         }
         //materia
@@ -115,7 +117,8 @@ fun subOutputTopBar(onScreenChange: (Int) -> Unit) {
         ) {
             Text(
                 text = "Materia",
-                fontSize = 24.sp
+                fontSize = 20.sp,
+                color = Color.White
             )
         }
         //nota
@@ -142,7 +145,8 @@ fun subOutputTopBar(onScreenChange: (Int) -> Unit) {
         ) {
             Text(
                 text = "Nota",
-                fontSize = 24.sp
+                fontSize = 20.sp,
+                color = Color.White
             )
         }
         //búsqueda de datos
@@ -185,7 +189,8 @@ fun subOutputTopBar(onScreenChange: (Int) -> Unit) {
         ) {
             Text(
                 text = "Búsqueda de datos",
-                fontSize = 24.sp
+                fontSize = 20.sp,
+                color = Color.Black
             )
         }
     }

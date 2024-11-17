@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
+@file:OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
 
 package screens
 
@@ -213,11 +213,11 @@ fun materiaInputSubAppBar(onScreenChange: (Int) -> Unit) {
 fun materiaInputInsert() {
     var nombreDeLaMateria by remember { mutableStateOf("") }
     var selectedProfesor by remember { mutableStateOf("") }
+    var dniProfesor by remember { mutableStateOf("") }
 
     var expanded by remember { mutableStateOf(false) }
     val crud = SQLiteCRUD()
     val profesores = crud.selectProfesores()
-    var dniProfesor = ""
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -317,15 +317,15 @@ fun materiaInputInsert() {
                 profesores.forEach { profesor ->
                     val nombre = profesor[0] as String
                     val dni = profesor[1] as String
+                    dniProfesor = dni
                     DropdownMenuItem(//los items
                         onClick = {
-                            selectedProfesor = "nombre: $nombre | dni: $dni"
+                            selectedProfesor = "nombre: $nombre | dni: $dniProfesor"
                             expanded = false
-                            dniProfesor = dni
                         }
                     ) {
                         Text(
-                            text = "nombre: $nombre | dni: $dni",
+                            text = "nombre: $nombre | dni: $dniProfesor",
                             color = Color.White
                         )
                     }
@@ -343,9 +343,9 @@ fun materiaInputInsert() {
                     )
                     nombreDeLaMateria = ""
                     selectedProfesor = ""
+                    dniProfesor = ""
                 }catch (e: Exception){
                     println(e.message)
-                    println(e.localizedMessage)
                     print(e.cause)
                 }
             },
