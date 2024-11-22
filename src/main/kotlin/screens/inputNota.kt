@@ -219,6 +219,7 @@ fun notaInputInsert() {
 
     var dniProfesor by remember { mutableStateOf("") }
     var dniAlumno by remember { mutableStateOf("") }
+    var materiaNombre by remember { mutableStateOf("") }
 
     var expandedProfesor by remember { mutableStateOf(false) }
     var expandedAlumno by remember { mutableStateOf(false) }
@@ -501,6 +502,7 @@ fun notaInputInsert() {
 
                     DropdownMenuItem(//los items
                         onClick = {
+                            materiaNombre = nombreDeLaMateria
                             selectedMateria = "nombre de la materia: $nombreDeLaMateria |  dni del profesor: $dniDelProfesor"
                             expandedMateria = false
                         }
@@ -522,6 +524,7 @@ fun notaInputInsert() {
                     crud.insertNotas(
                         dniP = dniProfesor,
                         dniA = dniAlumno,
+                        materia = materiaNombre,
                         nota = nota.toDoubleOrNull()?: 0.0
                     )
                     selectedAlumno = ""

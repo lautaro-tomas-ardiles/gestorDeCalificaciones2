@@ -49,6 +49,7 @@ object SQLiteconnection {
                     dniP TEXT NOT NULL,
                     dniA TEXT NOT NULL,
                     nota REAL NOT NULL,
+                    materia TEXT NOT NULL,
                     FOREIGN KEY(dniP) REFERENCES profesores(dniP),
                     FOREIGN KEY(dniA) REFERENCES alumnos(dniA)
                 );
@@ -94,14 +95,15 @@ class SQLiteCRUD {
             }
         }
     }
-    fun insertNotas(dniP: String, dniA: String, nota: Double){
-        val sql = "INSERT INTO notas (dniP, dniA, nota) VALUES (?, ?, ?)"
+    fun insertNotas(dniP: String, dniA: String, materia: String, nota: Double){
+        val sql = "INSERT INTO notas (dniP, dniA, materia, nota) VALUES (?, ?, ?, ?)"
 
         SQLiteconnection.connect()?.use { conn ->
             conn.prepareStatement(sql).use { pstmt ->
                 pstmt.setString(1, dniP)
                 pstmt.setString(2, dniA)
-                pstmt.setDouble(3, nota)
+                pstmt.setString(3, materia)
+                pstmt.setDouble(4, nota)
                 pstmt.executeUpdate()
             }
         }
@@ -110,19 +112,20 @@ class SQLiteCRUD {
     fun selectAlumnosN(nombreCompletoA: String): List<List<Any>> {
         val data = mutableListOf<List<Any>>()
         val sql = """
-            SELECT 
-                nombreCompletoA AS 'Alumno',
-                nota AS 'Nota',
-                nombreCompletoP AS 'Profesor',
-                materia AS 'Materia' 
-            FROM 
-                notas 
-            JOIN 
-                profesores ON notas.dniP = profesores.dniP
-            JOIN 
-                alumnos ON notas.dniA = alumnos.dniA 
-            JOIN 
-                materias ON materias.dniP = profesores.dniP 
+            SELECT
+                alumnos.nombreCompletoA AS 'alumno',
+                notas.nota AS 'nota',
+                profesores.nombreCompletoP AS 'profesor',
+                notas.materia AS 'materia'
+            FROM
+                alumnos
+            JOIN
+                notas ON alumnos.dniA = notas.dniA
+            JOIN
+                profesores ON profesores.dniP = notas.dniP
+            JOIN
+                materias ON materias.dniP = profesores.dniP
+                AND materias.materia = notas.materia
             WHERE 
                 alumnos.nombreCompletoA LIKE ?;
             """
@@ -147,21 +150,22 @@ class SQLiteCRUD {
     fun selectAlumnosD(dniA: String): List<List<Any>> {
         val data = mutableListOf<List<Any>>()
         val sql = """
-            SELECT 
-                nombreCompletoA AS 'Alumno',
-                nota AS 'Nota',
-                nombreCompletoP AS 'Profesor',
-                materia AS 'Materia' 
-            FROM 
-                notas 
-            JOIN 
-                profesores ON notas.dniP = profesores.dniP
-            JOIN 
-                alumnos ON notas.dniA = alumnos.dniA 
-            JOIN 
-                materias ON materias.dniP = profesores.dniP 
+            SELECT
+                alumnos.nombreCompletoA AS 'alumno',
+                notas.nota AS 'nota',
+                profesores.nombreCompletoP AS 'profesor',
+                notas.materia AS 'materia'
+            FROM
+                alumnos
+            JOIN
+                notas ON alumnos.dniA = notas.dniA
+            JOIN
+                profesores ON profesores.dniP = notas.dniP
+            JOIN
+                materias ON materias.dniP = profesores.dniP
+                AND materias.materia = notas.materia
             WHERE 
-                alumnos.dniA LIKE ?;
+                alumnos.dniA LIKE ?;     
             """
 
         SQLiteconnection.connect()?.use { conn ->
