@@ -315,7 +315,6 @@ fun alumnoInputInsert() {
     }
 }
 
-
 @Composable
 fun mainInputAlumno(onScreenChange: (Int) -> Unit) {
     Scaffold(
