@@ -1,315 +1,50 @@
-@file:OptIn(ExperimentalComposeUiApi::class)
-
 package screens
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import colors.*
-import sql.SQLiteCRUD
+import colors.black
+import sql.SqlViewModel
+import utilitis.addButton
+import utilitis.customSnackbar
+import utilitis.menuBar
+import utilitis.textBar
 
 @Composable
-fun inputTopAppBar() {
-    TopAppBar(
-        title = {
-            Text(
-                text = "Gestor de notas ",
-                fontSize = MaterialTheme.typography.h5.fontSize,
-                color = Color.Black,
-                fontWeight = FontWeight.Normal
-            )
-        },
-        backgroundColor = green,
-        elevation = 0.dp,
-    )
-}
-
-@Composable
-fun alumnoInputSubAppBar(onScreenChange: (Int) -> Unit) {
-    val screenWidth = LocalWindowInfo.current.containerSize.width.dp
-    val boxWidth = screenWidth / 8
-    val superBoxWidth = screenWidth / 2
-
-    Row{
-        //alumno
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .height(50.16.dp)
-                .width(boxWidth)
-                .background(color = orange)
-                .drawBehind {
-                    val strokeWidth = 4.dp.toPx()
-
-                    // Borde izquierdo
-                    drawLine(
-                        color = red,
-                        start = Offset(0f, 0f),
-                        end = Offset(0f, size.height),
-                        strokeWidth = strokeWidth
-                    )
-
-                    // Borde inferior
-                    drawLine(
-                        color = red,
-                        start = Offset(0f, size.height - strokeWidth / 2),
-                        end = Offset(size.width, size.height - strokeWidth / 2),
-                        strokeWidth = strokeWidth
-                    )
-
-                    // Borde derecho
-                    drawLine(
-                        color = red,
-                        start = Offset(size.width - strokeWidth / 2, 0f),
-                        end = Offset(size.width - strokeWidth / 2, size.height),
-                        strokeWidth = strokeWidth
-                    )
-                }
-                .clickable {
-                    onScreenChange(1)
-                }
-        ) {
-            Text(
-                text = "Alumno",
-                fontSize = MaterialTheme.typography.h6.fontSize
-            )
-        }
-        //profesor
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .height(50.16.dp)
-                .width(boxWidth)
-                .background(color = blue)
-                .drawBehind {
-                    val strokeWidth = 4f
-
-                    // Borde superior
-                    drawLine(
-                        color = red,
-                        start = Offset(0f, strokeWidth / 2),
-                        end = Offset(size.width, strokeWidth / 2),
-                        strokeWidth = strokeWidth
-                    )
-                }
-                .clickable {
-                    onScreenChange(2)
-                }
-        ) {
-            Text(
-                text = "Profesor",
-                fontSize = MaterialTheme.typography.h6.fontSize,
-                color = Color.White
-            )
-        }
-        //materia
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .height(50.16.dp)
-                .width(boxWidth)
-                .background(color = blue)
-                .drawBehind {
-                    val strokeWidth = 4f
-
-                    // Borde superior
-                    drawLine(
-                        color = red,
-                        start = Offset(0f, strokeWidth / 2),
-                        end = Offset(size.width, strokeWidth / 2),
-                        strokeWidth = strokeWidth
-                    )
-                }
-                .clickable {
-                    onScreenChange(3)
-                }
-        ) {
-            Text(
-                text = "Materia",
-                fontSize = MaterialTheme.typography.h6.fontSize,
-                color = Color.White
-            )
-        }
-        //nota
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .height(50.16.dp)
-                .width(boxWidth)
-                .background(color = blue)
-                .drawBehind {
-                    val strokeWidth = 4f
-
-                    // Borde superior
-                    drawLine(
-                        color = red,
-                        start = Offset(0f, strokeWidth / 2),
-                        end = Offset(size.width, strokeWidth / 2),
-                        strokeWidth = strokeWidth
-                    )
-                }
-                .clickable {
-                    onScreenChange(4)
-                }
-        ) {
-            Text(
-                text = "Nota",
-                fontSize = MaterialTheme.typography.h6.fontSize,
-                color = Color.White
-            )
-        }
-        //búsqueda de datos
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .height(50.16.dp)
-                .width(superBoxWidth)
-                .background(color = blue)
-                .drawBehind {
-                    val strokeWidth = 4f
-
-                    // Borde superior
-                    drawLine(
-                        color = red,
-                        start = Offset(0f, strokeWidth / 2),
-                        end = Offset(size.width, strokeWidth / 2),
-                        strokeWidth = strokeWidth
-                    )
-
-                    // Borde derecho
-                    drawLine(
-                        color = red,
-                        start = Offset(size.width - strokeWidth / 2, 0f),
-                        end = Offset(size.width - strokeWidth / 2, size.height),
-                        strokeWidth = strokeWidth
-                    )
-                }
-                .clickable {
-                    onScreenChange(5)
-                }
-        ) {
-            Text(
-                text = "Búsqueda de datos",
-                fontSize = MaterialTheme.typography.h6.fontSize,
-                color = Color.White
-            )
-        }
-    }
-
-}
-
-@Composable
-fun alumnoInputInsert() {
+fun alumnoInputText(sql: SqlViewModel) {
     var nombreDelAlumno by remember { mutableStateOf("") }
     var dniDelAlumno by remember { mutableStateOf("") }
-
-    val crud = SQLiteCRUD()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            //.verticalScroll(scroll)
-            .padding(vertical = 20.dp),
+            .padding(vertical = 35.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
-    ){
-        OutlinedTextField(
+    ) {
+        textBar(
             value = nombreDelAlumno,
-            onValueChange = {nombreDelAlumno = it},
-            label = {
-                Text(
-                    text = "Nombre del alumno...",
-                    fontSize = MaterialTheme.typography.h6.fontSize
-                )
-            },
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = blue,
-                unfocusedBorderColor = blue,
-                focusedLabelColor = Color.White,
-                unfocusedLabelColor = Color.LightGray
-            ),
-            textStyle = TextStyle(
-                fontSize = 17.sp,
-                color = Color.White
-            ),
-            singleLine = true,
-            shape = RoundedCornerShape(40.dp),
-            modifier = Modifier
-                .fillMaxWidth(0.5f)
+            onValueChange = { nombreDelAlumno = it },
+            label = "Nombre del alumno..."
         )
-        Spacer(modifier = Modifier.padding(31.5.dp))
+        Spacer(modifier = Modifier.padding(31.dp))
 
-        OutlinedTextField(
+        textBar(
             value = dniDelAlumno,
-            onValueChange = {dniDelAlumno = it},
-            label = {
-                Text(
-                    text = "D.N.I del alumno...",
-                    fontSize = MaterialTheme.typography.h6.fontSize
-                )
-            },
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = blue,
-                unfocusedBorderColor = blue,
-                focusedLabelColor = Color.White,
-                unfocusedLabelColor = Color.LightGray
-            ),
-            textStyle = TextStyle(
-                fontSize = 17.sp,
-                color = Color.White
-            ),
-            singleLine = true,
-            shape = RoundedCornerShape(40.dp),
-            modifier = Modifier
-                .fillMaxWidth(0.5f)
+            onValueChange = { dniDelAlumno = it },
+            label = "D.N.I del alumno..."
         )
-        Spacer(modifier = Modifier.padding(31.5.dp))
+        Spacer(modifier = Modifier.padding(31.dp))
 
-        OutlinedButton(
+        addButton(
+            label = "Añadir",
             onClick = {
-                try {
-                    crud.insertAlumnos(
-                        nombreCompletoA = nombreDelAlumno,
-                        dniA = dniDelAlumno
-                    )
-                    nombreDelAlumno = ""
-                    dniDelAlumno = ""
-                }catch (e: Exception){
-                    println(e.message)
-                    println(e.localizedMessage)
-                    print(e.cause)
-                }
-            },
-            shape = RoundedCornerShape(40.dp),
-            border = BorderStroke(
-                width = 2.dp,
-                color = blue
-            ),
-            colors = ButtonDefaults.outlinedButtonColors(
-                backgroundColor = Color.Transparent,
-            ),
-            content = {
-                Text(
-                    text = "Añadir",
-                    color = Color.White,
-                    fontSize = MaterialTheme.typography.h6.fontSize,
-                    fontWeight = FontWeight.Normal
-                )
+                sql.agregarAlumno(nombreDelAlumno, dniDelAlumno)
+                nombreDelAlumno = ""
+                dniDelAlumno = ""
             }
         )
     }
@@ -317,15 +52,27 @@ fun alumnoInputInsert() {
 
 @Composable
 fun mainInputAlumno(onScreenChange: (Int) -> Unit) {
-    Scaffold(
-        topBar = {
-            inputTopAppBar()
-        },
-        backgroundColor = black
-    ) {
-        Column{
-            alumnoInputSubAppBar(onScreenChange)
-            alumnoInputInsert()
+    val sql = remember { SqlViewModel() }
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // Mostrar mensaje cuando cambie
+    LaunchedEffect(sql.mensaje) {
+        sql.mensaje?.let {
+            snackbarHostState.showSnackbar(it)
+            sql.limpiarMensaje()
         }
     }
+    Scaffold(
+        backgroundColor = black,
+        snackbarHost = {
+            SnackbarHost(
+                snackbarHostState,
+                snackbar = { data -> customSnackbar(data) }
+            )
+        }
+    ) {
+        menuBar(onScreenChange, 1)
+        alumnoInputText(sql)
+    }
+
 }

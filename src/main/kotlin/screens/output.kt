@@ -2,7 +2,8 @@
 
 package screens
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,190 +13,17 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import colors.*
+import colors.black
+import colors.blue
+import colors.orange
+import colors.red
 import sql.SQLiteCRUD
-
-@Composable
-fun subOutputTopBar(onScreenChange: (Int) -> Unit) {
-    val screenWidth = LocalWindowInfo.current.containerSize.width.dp
-    val boxWidth = screenWidth / 8
-    val superBoxWidth = screenWidth / 2
-
-    Row{
-        //alumno
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .height(50.16.dp)
-                .width(boxWidth)
-                .background(color = blue)
-                .drawBehind {
-                    val strokeWidth = 4.dp.toPx()
-
-                    // Borde superior
-                    drawLine(
-                        color = red,
-                        start = Offset(0f, strokeWidth / 2),
-                        end = Offset(size.width, strokeWidth / 2),
-                        strokeWidth = strokeWidth
-                    )
-
-                    // Borde izquierdo
-                    drawLine(
-                        color = red,
-                        start = Offset(0f, 0f),
-                        end = Offset(0f, size.height),
-                        strokeWidth = strokeWidth
-                    )
-                }
-                .clickable {
-                    onScreenChange(1)
-                }
-        ) {
-            Text(
-                text = "Alumno",
-                fontSize = 20.sp,
-                color = Color.White
-            )
-        }
-        //profesor
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .height(50.16.dp)
-                .width(boxWidth)
-                .background(color = blue)
-                .drawBehind {
-                    val strokeWidth = 4f
-
-                    // Borde superior
-                    drawLine(
-                        color = red,
-                        start = Offset(0f, strokeWidth / 2),
-                        end = Offset(size.width, strokeWidth / 2),
-                        strokeWidth = strokeWidth
-                    )
-                }
-                .clickable {
-                    onScreenChange(2)
-                }
-        ) {
-            Text(
-                text = "Profesor",
-                fontSize = 20.sp,
-                color = Color.White
-            )
-        }
-        //materia
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .height(50.16.dp)
-                .width(boxWidth)
-                .background(color = blue)
-                .drawBehind {
-                    val strokeWidth = 4f
-
-                    // Borde superior
-                    drawLine(
-                        color = red,
-                        start = Offset(0f, strokeWidth / 2),
-                        end = Offset(size.width, strokeWidth / 2),
-                        strokeWidth = strokeWidth
-                    )
-                }
-                .clickable {
-                    onScreenChange(3)
-                }
-        ) {
-            Text(
-                text = "Materia",
-                fontSize = 20.sp,
-                color = Color.White
-            )
-        }
-        //nota
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .height(50.16.dp)
-                .width(boxWidth)
-                .background(color = blue)
-                .drawBehind {
-                    val strokeWidth = 4f
-
-                    // Borde superior
-                    drawLine(
-                        color = red,
-                        start = Offset(0f, strokeWidth / 2),
-                        end = Offset(size.width, strokeWidth / 2),
-                        strokeWidth = strokeWidth
-                    )
-                }
-                .clickable {
-                    onScreenChange(4)
-                }
-        ) {
-            Text(
-                text = "Nota",
-                fontSize = 20.sp,
-                color = Color.White
-            )
-        }
-        //búsqueda de datos
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .height(50.16.dp)
-                .width(superBoxWidth)
-                .background(color = orange)
-                .drawBehind {
-                    val strokeWidth = 4f
-
-                    // Borde izquierdo
-                    drawLine(
-                        color = red,
-                        start = Offset(0f, 0f),
-                        end = Offset(0f, size.height),
-                        strokeWidth = strokeWidth
-                    )
-
-                    // Borde inferior
-                    drawLine(
-                        color = red,
-                        start = Offset(0f, size.height - strokeWidth / 2),
-                        end = Offset(size.width, size.height - strokeWidth / 2),
-                        strokeWidth = strokeWidth
-                    )
-
-                    // Borde derecho
-                    drawLine(
-                        color = red,
-                        start = Offset(size.width - strokeWidth / 2, 0f),
-                        end = Offset(size.width - strokeWidth / 2, size.height),
-                        strokeWidth = strokeWidth
-                    )
-                }
-                .clickable {
-                    onScreenChange(5)
-                }
-        ) {
-            Text(
-                text = "Búsqueda de datos",
-                fontSize = 20.sp,
-                color = Color.Black
-            )
-        }
-    }
-}
+import utilitis.menuBar
 
 @Composable
 fun search(
@@ -234,7 +62,6 @@ fun search(
             singleLine = true,
             shape = RoundedCornerShape(10.dp),
             modifier = Modifier.weight(1f)
-                //.width(470.dp)
         )
         Spacer(modifier = Modifier.padding(14.5.dp))
 
@@ -374,17 +201,16 @@ fun mainOutput(onScreenChange: (Int) -> Unit) {
     var estudiantes by remember { mutableStateOf(emptyList<List<Any>>()) }
 
     Scaffold(
-        topBar = { inputTopAppBar() },
         backgroundColor = black
     ){
         Column{
-            subOutputTopBar(onScreenChange)
+            menuBar(onScreenChange, 5)
             search(
                 onSearchByName = { search ->
-                    estudiantes = crud.selectAlumnosN(search)
+                    estudiantes = crud.selectAlumnosByNameAndNotas(search)
                 },
                 onSearchByDNI = { search ->
-                    estudiantes = crud.selectAlumnosD(search)
+                    estudiantes = crud.selectAlumnosByDNIAndNotas(search)
                 }
             )
             textsOutPut(estudiantes)

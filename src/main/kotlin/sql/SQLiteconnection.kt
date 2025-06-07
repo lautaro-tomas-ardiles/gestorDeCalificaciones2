@@ -7,10 +7,14 @@ import java.sql.DriverManager
 import java.sql.SQLException
 
 object SQLiteconnection {
-    private val dbPath = System.getProperty("user.home") + "/Escuela.db"
+    private val dbDirectory = Paths.get("data")
+    private val dbPath = dbDirectory.resolve("Escuela.db").toString()
     private val url = "jdbc:sqlite:$dbPath"
 
     init {
+        if (!Files.exists(dbDirectory)) {
+            Files.createDirectories(dbDirectory)
+        }
         if (!Files.exists(Paths.get(dbPath))) {
             createDatabase()
         }
@@ -65,51 +69,83 @@ class SQLiteCRUD {
     fun insertAlumnos(nombreCompletoA: String, dniA: String){
         val sql = "INSERT INTO alumnos (dniA, nombreCompletoA) VALUES (?, ?)"
 
-        SQLiteconnection.connect()?.use { conn ->
-            conn.prepareStatement(sql).use { pstmt ->
-                pstmt.setString(1,dniA)
-                pstmt.setString(2,nombreCompletoA )
-                pstmt.executeUpdate()
+        try {
+            SQLiteconnection.connect()?.use { conn ->
+                conn.prepareStatement(sql).use { pstmt ->
+                    pstmt.setString(1, dniA)
+                    pstmt.setString(2, nombreCompletoA)
+                    pstmt.executeUpdate()
+                }
+            }
+        }catch (e: Exception) {
+            if (e.message?.contains("UNIQUE constraint failed: alumnos.dniA") == true) {
+                throw Exception("el D.N.I del alumno ya existe")
+            } else {
+                throw e
             }
         }
     }
-    fun insertProfesores(nombreCompletoP: String, dniP: String){
+    fun insertProfesores(nombreCompletoP: String, dniP: String) {
         val sql = "INSERT INTO profesores (nombreCompletoP, dniP) VALUES (?, ?)"
 
-        SQLiteconnection.connect()?.use { conn ->
-            conn.prepareStatement(sql).use { pstmt ->
-                pstmt.setString(1, nombreCompletoP)
-                pstmt.setString(2, dniP)
-                pstmt.executeUpdate()
+        try {
+            SQLiteconnection.connect()?.use { conn ->
+                conn.prepareStatement(sql).use { pstmt ->
+                    pstmt.setString(1, nombreCompletoP)
+                    pstmt.setString(2, dniP)
+                    pstmt.executeUpdate()
+                }
+            }
+        } catch (e: Exception) {
+            if (e.message?.contains("UNIQUE constraint failed: profesores.dniP") == true) {
+                throw Exception("Ya existe un profesor con ese DNI.")
+            } else {
+                throw e
             }
         }
     }
-    fun insertMaterias(dniP: String, materia: String){
+    fun insertMaterias(dniP: String, materia: String) {
         val sql = "INSERT INTO materias (dniP, materia) VALUES (?, ?)"
 
-        SQLiteconnection.connect()?.use { conn ->
-            conn.prepareStatement(sql).use { pstmt ->
-                pstmt.setString(1, dniP)
-                pstmt.setString(2, materia)
-                pstmt.executeUpdate()
+        try {
+            SQLiteconnection.connect()?.use { conn ->
+                conn.prepareStatement(sql).use { pstmt ->
+                    pstmt.setString(1, dniP)
+                    pstmt.setString(2, materia)
+                    pstmt.executeUpdate()
+                }
+            }
+        } catch (e: Exception) {
+            if (e.message?.contains("UNIQUE constraint failed: materias.dniP, materias.materia") == true) {
+                throw Exception("Esa materia ya fue registrada para ese profesor.")
+            } else {
+                throw e
             }
         }
     }
-    fun insertNotas(dniP: String, dniA: String, materia: String, nota: Double){
+    fun insertNotas(dniP: String, dniA: String, materia: String, nota: Double) {
         val sql = "INSERT INTO notas (dniP, dniA, materia, nota) VALUES (?, ?, ?, ?)"
 
-        SQLiteconnection.connect()?.use { conn ->
-            conn.prepareStatement(sql).use { pstmt ->
-                pstmt.setString(1, dniP)
-                pstmt.setString(2, dniA)
-                pstmt.setString(3, materia)
-                pstmt.setDouble(4, nota)
-                pstmt.executeUpdate()
+        try {
+            SQLiteconnection.connect()?.use { conn ->
+                conn.prepareStatement(sql).use { pstmt ->
+                    pstmt.setString(1, dniP)
+                    pstmt.setString(2, dniA)
+                    pstmt.setString(3, materia)
+                    pstmt.setDouble(4, nota)
+                    pstmt.executeUpdate()
+                }
+            }
+        } catch (e: Exception) {
+            if (e.message?.contains("UNIQUE constraint failed: notas") == true) {
+                throw Exception("Ya se ha registrado una nota para ese alumno, materia y profesor.")
+            } else {
+                throw e
             }
         }
     }
 
-    fun selectAlumnosN(nombreCompletoA: String): List<List<Any>> {
+    fun selectAlumnosByNameAndNotas(nombreCompletoA: String): List<List<Any>> {
         val data = mutableListOf<List<Any>>()
         val sql = """
             SELECT
@@ -147,7 +183,7 @@ class SQLiteCRUD {
         }
         return data
     }
-    fun selectAlumnosD(dniA: String): List<List<Any>> {
+    fun selectAlumnosByDNIAndNotas(dniA: String): List<List<Any>> {
         val data = mutableListOf<List<Any>>()
         val sql = """
             SELECT

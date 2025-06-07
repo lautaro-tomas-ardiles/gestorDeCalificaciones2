@@ -2,572 +2,162 @@
 
 package screens
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import colors.black
 import colors.blue
 import colors.orange
-import colors.red
-import sql.SQLiteCRUD
+import sql.SqlViewModel
+import utilitis.addButton
+import utilitis.menuBar
+import utilitis.selectorBox
+import utilitis.textBar
 
 @Composable
-fun notaInputSubAppBar(onScreenChange: (Int) -> Unit) {
-    val screenWidth = LocalWindowInfo.current.containerSize.width.dp
-    val boxWidth = screenWidth / 8
-    val superBoxWidth = screenWidth / 2
-
-    Row{
-        //alumno
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .height(50.16.dp)
-                .width(boxWidth)
-                .background(color = blue)
-                .drawBehind {
-                    val strokeWidth = 4.dp.toPx()
-
-                    // Borde superior
-                    drawLine(
-                        color = red,
-                        start = Offset(0f, strokeWidth / 2),
-                        end = Offset(size.width, strokeWidth / 2),
-                        strokeWidth = strokeWidth
-                    )
-
-                    // Borde izquierdo
-                    drawLine(
-                        color = red,
-                        start = Offset(0f, 0f),
-                        end = Offset(0f, size.height),
-                        strokeWidth = strokeWidth
-                    )
-                }
-                .clickable {
-                    onScreenChange(1)
-                }
-        ) {
-            Text(
-                text = "Alumno",
-                fontSize = 20.sp,
-                color = Color.White
-            )
-        }
-        //profesor
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .height(50.16.dp)
-                .width(boxWidth)
-                .background(color = blue)
-                .drawBehind {
-                    val strokeWidth = 4f
-
-                    // Borde superior
-                    drawLine(
-                        color = red,
-                        start = Offset(0f, strokeWidth / 2),
-                        end = Offset(size.width, strokeWidth / 2),
-                        strokeWidth = strokeWidth
-                    )
-                }
-                .clickable {
-                    onScreenChange(2)
-                }
-        ) {
-            Text(
-                text = "Profesor",
-                fontSize = 20.sp,
-                color = Color.White
-            )
-        }
-        //materia
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .height(50.16.dp)
-                .width(boxWidth)
-                .background(color = blue)
-                .drawBehind {
-                    val strokeWidth = 4f
-
-                    // Borde superior
-                    drawLine(
-                        color = red,
-                        start = Offset(0f, strokeWidth / 2),
-                        end = Offset(size.width, strokeWidth / 2),
-                        strokeWidth = strokeWidth
-                    )
-                }
-                .clickable {
-                    onScreenChange(3)
-                }
-        ) {
-            Text(
-                text = "Materia",
-                fontSize = 20.sp,
-                color = Color.White
-            )
-        }
-        //nota
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .height(50.16.dp)
-                .width(boxWidth)
-                .background(color = orange)
-                .drawBehind {
-                    val strokeWidth = 4f
-                // Borde izquierdo
-                    drawLine(
-                        color = red,
-                        start = Offset(0f, 0f),
-                        end = Offset(0f, size.height),
-                        strokeWidth = strokeWidth
-                    )
-
-                    // Borde inferior
-                    drawLine(
-                        color = red,
-                        start = Offset(0f, size.height - strokeWidth / 2),
-                        end = Offset(size.width, size.height - strokeWidth / 2),
-                        strokeWidth = strokeWidth
-                    )
-
-                    // Borde derecho
-                    drawLine(
-                        color = red,
-                        start = Offset(size.width - strokeWidth / 2, 0f),
-                        end = Offset(size.width - strokeWidth / 2, size.height),
-                        strokeWidth = strokeWidth
-                    )
-
-                }
-                .clickable {
-                    onScreenChange(4)
-                }
-        ) {
-            Text(
-                text = "Nota",
-                fontSize = 20.sp,
-                color = Color.Black
-            )
-        }
-        //búsqueda de datos
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .height(50.16.dp)
-                .width(superBoxWidth)
-                .background(color = blue)
-                .drawBehind {
-                    val strokeWidth = 4f
-
-                    // Borde superior
-                    drawLine(
-                        color = red,
-                        start = Offset(0f, strokeWidth / 2),
-                        end = Offset(size.width, strokeWidth / 2),
-                        strokeWidth = strokeWidth
-                    )
-
-                    // Borde derecho
-                    drawLine(
-                        color = red,
-                        start = Offset(size.width - strokeWidth / 2, 0f),
-                        end = Offset(size.width - strokeWidth / 2, size.height),
-                        strokeWidth = strokeWidth
-                    )
-                }
-                .clickable {
-                    onScreenChange(5)
-                }
-        ) {
-            Text(
-                text = "Búsqueda de datos",
-                fontSize = 20.sp,
-                color = Color.White
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-fun notaInputInsert() {
+fun notaInputInsert(sql: SqlViewModel) {
     val scroll = rememberScrollState()
     var nota by remember { mutableStateOf("") }
 
-    var selectedProfesor by remember { mutableStateOf("") }
-    var selectedAlumno by remember { mutableStateOf("") }
-    var selectedMateria by remember { mutableStateOf("") }
-
-    var dniProfesor by remember { mutableStateOf("") }
-    var dniAlumno by remember { mutableStateOf("") }
+    var alumnoNombre by remember { mutableStateOf("") }
+    var profesorNombre by remember { mutableStateOf("") }
     var materiaNombre by remember { mutableStateOf("") }
 
-    var expandedProfesor by remember { mutableStateOf(false) }
+    var dniAlumno by remember { mutableStateOf("") }
+    var dniProfesor by remember { mutableStateOf("") }
+
     var expandedAlumno by remember { mutableStateOf(false) }
+    var expandedProfesor by remember { mutableStateOf(false) }
     var expandedMateria by remember { mutableStateOf(false) }
 
-    val crud = SQLiteCRUD()
-    val profesores = crud.selectProfesores()
-    val alumno = crud.selectAlumnos()
-    val materias = crud.selectMaterias()
+    val alumnos = remember { sql.obtenerAlumnos() }
+    val profesores = remember { sql.obtenerProfesores() }
+    val materias = remember { sql.obtenerMaterias() }
+
+    val alumnosFiltrados = alumnos.filter {
+        val nombre = (it[0] as? String)?.lowercase() ?: ""
+        nombre.contains(alumnoNombre.lowercase())
+    }
+    val profesoresFiltrados = profesores.filter {
+        val nombre = (it[0] as? String)?.lowercase() ?: ""
+        nombre.contains(profesorNombre.lowercase())
+    }
+    val materiasFiltradas = materias.filter {
+        val nombre = (it[0] as? String)?.lowercase() ?: ""
+        nombre.contains(materiaNombre.lowercase())
+        val profesorDni = (it[1] as? String)?.lowercase() ?: ""
+        profesorDni.contains(dniProfesor.lowercase())
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(scroll)
-            .padding(vertical = 20.dp),
+            .padding(vertical = 35.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
-
     ) {
-        OutlinedTextField(
+        textBar(
             value = nota,
             onValueChange = { nota = it },
-            label = {
-                Text(
-                    text = "Nota del alumno...",
-                    fontSize = MaterialTheme.typography.h6.fontSize
-                )
-            },
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = blue,
-                unfocusedBorderColor = blue,
-                focusedLabelColor = Color.White,
-                unfocusedLabelColor = Color.LightGray
-            ),
-            textStyle = TextStyle(
-                fontSize = 17.sp,
-                color = Color.White
-            ),
-            singleLine = true,
-            shape = RoundedCornerShape(40.dp),
-            modifier = Modifier
-                .fillMaxWidth(0.5f)
+            label = "Nota..."
         )
-        Spacer(modifier = Modifier.padding(31.5.dp))
-
-        ExposedDropdownMenuBox(//caja del drop menu
+        Spacer(modifier = Modifier.padding(31.dp))
+        // ALUMNO
+        selectorBox(
+            label = "Seleccione alumno...",
             expanded = expandedAlumno,
-            onExpandedChange = {
-                expandedAlumno = !expandedAlumno
-            },
-            modifier = Modifier
-                .fillMaxWidth(0.5f)
-        ){
-            OutlinedTextField(//text field
-                value = selectedAlumno,
-                onValueChange = {  },
-                label = {
-                    Text(
-                        text = "Seleccione alumno...",
-                        fontSize = MaterialTheme.typography.h6.fontSize
-                    )
-                },
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = blue,
-                    unfocusedBorderColor = blue,
-                    focusedLabelColor = Color.White,
-                    unfocusedLabelColor = Color.LightGray
-                ),
-                textStyle = TextStyle(
-                    fontSize = 17.sp,
-                    color = Color.White
-                ),
-                singleLine = true,
-                shape = RoundedCornerShape(40.dp),
-                modifier = Modifier
-                    .fillMaxWidth(),
-                trailingIcon = {
-                    if (expandedAlumno){
-                        Icon(
-                            painter = painterResource("Chevron up.svg"),
-                            contentDescription = "flecha",
-                            tint = Color.White,
-                            modifier = Modifier
-                                .size(40.dp)
-                        )
-                    }else {
-                        Icon(
-                            painter = painterResource("Chevron down.svg"),
-                            contentDescription = "flecha",
-                            tint = Color.White,
-                            modifier = Modifier
-                                .size(40.dp)
-                        )
-                    }
-
-                    ExposedDropdownMenuDefaults.TrailingIcon(//action de abrir o cerrar el menu
-                        expanded = expandedAlumno
-                    )
-                }
-            )
-            ExposedDropdownMenu(//el menu en si
-                expanded = expandedAlumno,
-                onDismissRequest = {
-                    expandedAlumno = false
-                },
-                modifier = Modifier
-                    .background(black)
-            ){
-                alumno.forEach { alumno ->
-                    val nombreDelAlumno = alumno[0] as String
-                    val dniDelAlumno = alumno[1] as String
-
-                    DropdownMenuItem(//los items
-                        onClick = {
-                            dniAlumno = dniDelAlumno
-                            selectedAlumno = "nombre: $nombreDelAlumno | dni: $dniDelAlumno"
-                            expandedAlumno = false
-                        }
-                    ) {
-                        Text(
-                            text = "nombre: $nombreDelAlumno | dni: $dniDelAlumno",
-                            color = Color.White
-                        )
-                    }
-                }
-            }
-        }
-        Spacer(modifier = Modifier.padding(31.5.dp))
-
-        ExposedDropdownMenuBox(//caja del drop menu
-            expanded = expandedProfesor,
-            onExpandedChange = {
-                expandedProfesor = !expandedProfesor
-            },
-            modifier = Modifier
-                .fillMaxWidth(0.5f)
-        ){
-            OutlinedTextField(//text field
-                value = selectedProfesor,
-                onValueChange = {  },
-                label = {
-                    Text(
-                        text = "Seleccione profesor...",
-                        fontSize = MaterialTheme.typography.h6.fontSize
-                    )
-                },
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = blue,
-                    unfocusedBorderColor = blue,
-                    focusedLabelColor = Color.White,
-                    unfocusedLabelColor = Color.LightGray
-                ),
-                textStyle = TextStyle(
-                    fontSize = 17.sp,
-                    color = Color.White
-                ),
-                singleLine = true,
-                shape = RoundedCornerShape(40.dp),
-                modifier = Modifier
-                    .fillMaxWidth(),
-                trailingIcon = {
-                    if (expandedProfesor){
-                        Icon(
-                            painter = painterResource("Chevron up.svg"),
-                            contentDescription = "flecha",
-                            tint = Color.White,
-                            modifier = Modifier
-                                .size(40.dp)
-                        )
-                    }else {
-                        Icon(
-                            painter = painterResource("Chevron down.svg"),
-                            contentDescription = "flecha",
-                            tint = Color.White,
-                            modifier = Modifier
-                                .size(40.dp)
-                        )
-                    }
-
-                    ExposedDropdownMenuDefaults.TrailingIcon(//action de abrir o cerrar el menu
-                        expanded = expandedProfesor
-                    )
-                }
-            )
-            ExposedDropdownMenu(//el menu en si
-                expanded = expandedProfesor,
-                onDismissRequest = {
-                    expandedProfesor = false
-                },
-                modifier = Modifier
-                    .background(black)
-            ){
-                profesores.forEach { profesor ->
-                    val nombreDelProfesor = profesor[0] as String
-                    val dniDelProfesor = profesor[1] as String
-
-                    DropdownMenuItem(//los items
-                        onClick = {
-                            dniProfesor = dniDelProfesor
-                            selectedProfesor = "nombre: $nombreDelProfesor | dni: $dniDelProfesor"
-                            expandedProfesor = false
-                        }
-                    ) {
-                        Text(
-                            text = "nombre: $nombreDelProfesor | dni: $dniDelProfesor",
-                            color = Color.White
-                        )
-                    }
-                }
-            }
-        }
-        Spacer(modifier = Modifier.padding(31.5.dp))
-
-        ExposedDropdownMenuBox(//caja del drop menu
-            expanded = expandedMateria,
-            onExpandedChange = {
-                expandedMateria = !expandedMateria
-            },
-            modifier = Modifier
-                .fillMaxWidth(0.5f)
-        ){
-            OutlinedTextField(//text field
-                value = selectedMateria,
-                onValueChange = {  },
-                label = {
-                    Text(
-                        text = "Seleccione materia...",
-                        fontSize = MaterialTheme.typography.h6.fontSize
-                    )
-                },
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = blue,
-                    unfocusedBorderColor = blue,
-                    focusedLabelColor = Color.White,
-                    unfocusedLabelColor = Color.LightGray
-                ),
-                textStyle = TextStyle(
-                    fontSize = 17.sp,
-                    color = Color.White
-                ),
-                singleLine = true,
-                shape = RoundedCornerShape(40.dp),
-                modifier = Modifier
-                    .fillMaxWidth(),
-                trailingIcon = {
-                    if (expandedMateria){
-                        Icon(
-                            painter = painterResource("Chevron up.svg"),
-                            contentDescription = "flecha",
-                            tint = Color.White,
-                            modifier = Modifier
-                                .size(40.dp)
-                        )
-                    }else {
-                        Icon(
-                            painter = painterResource("Chevron down.svg"),
-                            contentDescription = "flecha",
-                            tint = Color.White,
-                            modifier = Modifier
-                                .size(40.dp)
-                        )
-                    }
-
-                    ExposedDropdownMenuDefaults.TrailingIcon(//action de abrir o cerrar el menu
-                        expanded = expandedMateria
-                    )
-                }
-            )
-            ExposedDropdownMenu(//el menu en si
-                expanded = expandedMateria,
-                onDismissRequest = {
-                    expandedMateria = false
-                },
-                modifier = Modifier
-                    .background(black)
-            ){
-                materias.forEach { materias ->
-                    val nombreDeLaMateria = materias[0] as String
-                    val dniDelProfesor = materias[1] as String
-
-                    DropdownMenuItem(//los items
-                        onClick = {
-                            materiaNombre = nombreDeLaMateria
-                            selectedMateria = "nombre de la materia: $nombreDeLaMateria |  dni del profesor: $dniDelProfesor"
-                            expandedMateria = false
-                        }
-                    ) {
-                        Text(
-                            text = "nombre de la materia: $nombreDeLaMateria |  dni del profesor: $dniDelProfesor",
-                            color = Color.White
-                        )
-                    }
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.padding(31.5.dp))
-
-        OutlinedButton(
-            onClick = {
-                try {
-                    crud.insertNotas(
-                        dniP = dniProfesor,
-                        dniA = dniAlumno,
-                        materia = materiaNombre,
-                        nota = nota.toDoubleOrNull()?: 0.0
-                    )
-                    selectedAlumno = ""
-                    selectedMateria = ""
-                    selectedProfesor = ""
-                    nota = ""
-
-                }catch (e: Exception){
-                    println(e.message)
-                    print(e.cause)
-                }
-            },
-            shape = RoundedCornerShape(40.dp),
-            border = BorderStroke(
-                width = 2.dp,
-                color = blue
-            ),
-            colors = ButtonDefaults.outlinedButtonColors(
-                backgroundColor = Color.Transparent,
-            ),
-            content = {
-                Text(
-                    text = "Añadir",
-                    color = Color.White,
-                    fontSize = MaterialTheme.typography.h6.fontSize,
-                    fontWeight = FontWeight.Normal
-                )
+            onExpandedChange = { expandedAlumno = it },
+            inputText = alumnoNombre,
+            onInputChange = { alumnoNombre = it },
+            options = alumnosFiltrados,
+            displayText = { "nombre: ${it[0]} | dni: ${it[1]}" },
+            onSelect = {
+                dniAlumno = it[1] as String
+                alumnoNombre = "nombre: ${it[0]} | dni: ${it[1]}"
+                expandedAlumno = false
             }
         )
+        Spacer(modifier = Modifier.padding(31.dp))
+        // PROFESOR
+        selectorBox(
+            label = "Seleccione profesor...",
+            expanded = expandedProfesor,
+            onExpandedChange = { expandedProfesor = it },
+            inputText = profesorNombre,
+            onInputChange = { profesorNombre = it },
+            options = profesoresFiltrados,
+            displayText = { "nombre: ${it[0]} | dni: ${it[1]}" },
+            onSelect = {
+                dniProfesor = it[1] as String
+                profesorNombre = "nombre: ${it[0]} | dni: ${it[1]}"
+                expandedProfesor = false
+            }
+        )
+        Spacer(modifier = Modifier.padding(31.dp))
+        // MATERIA
+        selectorBox(
+            label = "Seleccione materia...",
+            expanded = expandedMateria,
+            onExpandedChange = { expandedMateria = it },
+            inputText = materiaNombre,
+            onInputChange = { materiaNombre = it },
+            options = materiasFiltradas,
+            displayText = { "nombre: ${it[0]} | dni: ${it[1]}" },
+            onSelect = {
+                dniProfesor = it[1] as String
+                materiaNombre = it[0] as String
+                expandedMateria = false
+            }
+        )
+        Spacer(modifier = Modifier.padding(31.dp))
+
+        addButton(label = "Añadir") {
+            sql.agregarNota(dniProfesor, dniAlumno, materiaNombre, nota)
+            nota = ""
+            alumnoNombre = ""
+            profesorNombre = ""
+            materiaNombre = ""
+        }
     }
 }
 
 @Composable
 fun mainInputNota(onScreenChange: (Int) -> Unit) {
+    val sql = remember { SqlViewModel() }
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(sql.mensaje) {
+        sql.mensaje?.let {
+            snackbarHostState.showSnackbar(it)
+            sql.limpiarMensaje()
+        }
+    }
+
     Scaffold(
-        topBar = {
-            inputTopAppBar()
-        },
-        backgroundColor = black
+        backgroundColor = black,
+        snackbarHost = {
+            SnackbarHost(
+                snackbarHostState,
+                snackbar = { data -> utilitis.customSnackbar(data) }
+            )
+        }
     ) {
         Column {
-            notaInputSubAppBar(onScreenChange)
-            notaInputInsert()
+            menuBar(onScreenChange, 4)
+            notaInputInsert(sql)
         }
     }    
 }

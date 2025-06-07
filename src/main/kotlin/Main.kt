@@ -9,7 +9,7 @@ import androidx.compose.ui.window.application
 import screens.*
 
 @Composable
-fun App() {
+fun app() {
     var currentScreen by remember { mutableStateOf(1) }
 
     // Cuando currentScreen cambia, cambiamos la pantalla
@@ -31,6 +31,6 @@ fun main() = application {
         onCloseRequest = ::exitApplication,
         title = "Gestor de calificaciones"
     ) {
-        App()
+        app()
     }
 }
