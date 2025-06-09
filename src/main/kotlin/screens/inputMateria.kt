@@ -1,22 +1,16 @@
-@file:OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
-
 package screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import colors.black
-import colors.blue
 import sql.SqlViewModel
 import utilitis.*
 
@@ -25,7 +19,7 @@ fun materiaInputInsert(sql: SqlViewModel) {
     var nombreDeLaMateria by remember { mutableStateOf("") }
 
     var selectedProfesor by remember { mutableStateOf("") }
-    var profesorNombre by remember { mutableStateOf("")}
+    var profesorNombre by remember { mutableStateOf("") }
     var dniProfesor by remember { mutableStateOf("") }
 
     var expandedProfesor by remember { mutableStateOf(false) }
@@ -38,25 +32,25 @@ fun materiaInputInsert(sql: SqlViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(vertical = 35.dp),
-        verticalArrangement = Arrangement.Center,
+            .padding(vertical = 35.dp) ,
+        verticalArrangement = Arrangement.Center ,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         textBar(
-            value = nombreDeLaMateria,
-            onValueChange = { nombreDeLaMateria = it },
+            value = nombreDeLaMateria ,
+            onValueChange = { nombreDeLaMateria = it } ,
             label = "Nombre de la materia"
         )
         Spacer(modifier = Modifier.padding(31.dp))
         // PROFESOR
         selectorBox(
-            label = "Seleccione profesor...",
-            expanded = expandedProfesor,
-            onExpandedChange = { expandedProfesor = it },
-            inputText = profesorNombre,
-            onInputChange = { profesorNombre = it },
-            options = profesoresFiltrados,
-            displayText = { "nombre: ${it[0]} | dni: ${it[1]}" },
+            label = "Seleccione profesor..." ,
+            expanded = expandedProfesor ,
+            onExpandedChange = { expandedProfesor = it } ,
+            inputText = profesorNombre ,
+            onInputChange = { profesorNombre = it } ,
+            options = profesoresFiltrados ,
+            displayText = { "nombre: ${it[0]} | dni: ${it[1]}" } ,
             onSelect = {
                 dniProfesor = it[1] as String
                 profesorNombre = "nombre: ${it[0]} | dni: ${it[1]}"
@@ -68,7 +62,7 @@ fun materiaInputInsert(sql: SqlViewModel) {
         addButton(
             label = "Añadir"
         ) {
-            sql.agregarMateria(dniProfesor, nombreDeLaMateria)
+            sql.agregarMateria(dniProfesor , nombreDeLaMateria)
             nombreDeLaMateria = ""
             dniProfesor = ""
             selectedProfesor = ""
@@ -90,15 +84,15 @@ fun mainInputMateria(onScreenChange: (Int) -> Unit) {
     }
 
     Scaffold(
-        backgroundColor = black,
+        backgroundColor = black ,
         snackbarHost = {
             SnackbarHost(
-                snackbarHostState,
+                snackbarHostState ,
                 snackbar = { data -> customSnackbar(data) }
             )
         }
     ) {
-        menuBar(onScreenChange, 3)
+        menuBar(onScreenChange , 3)
         materiaInputInsert(sql)
     }
 }

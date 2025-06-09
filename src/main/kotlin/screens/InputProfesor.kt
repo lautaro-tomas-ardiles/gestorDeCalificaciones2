@@ -1,7 +1,9 @@
 package screens
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,27 +23,27 @@ fun profesorInputInsert(sql: SqlViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(vertical = 35.dp),
-        verticalArrangement = Arrangement.Center,
+            .padding(vertical = 35.dp) ,
+        verticalArrangement = Arrangement.Center ,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         textBar(
-            value = nombreDelProfesor,
-            onValueChange = { nombreDelProfesor = it },
+            value = nombreDelProfesor ,
+            onValueChange = { nombreDelProfesor = it } ,
             label = "Nombre del profesor..."
         )
         Spacer(modifier = Modifier.padding(31.dp))
 
         textBar(
-            value = dniDelProfesor,
-            onValueChange = { dniDelProfesor = it },
+            value = dniDelProfesor ,
+            onValueChange = { dniDelProfesor = it } ,
             label = "D.N.I del profesor"
         )
         Spacer(modifier = Modifier.padding(31.dp))
 
         addButton(label = "agregar") {
             sql.agregarProfesor(
-                nombreDelProfesor,
+                nombreDelProfesor ,
                 dniDelProfesor
             )
             nombreDelProfesor = ""
@@ -64,15 +66,15 @@ fun mainInputProfesor(onScreenChange: (Int) -> Unit) {
     }
 
     Scaffold(
-        backgroundColor = black,
+        backgroundColor = black ,
         snackbarHost = {
             SnackbarHost(
-                snackbarHostState,
+                snackbarHostState ,
                 snackbar = { data -> customSnackbar(data) }
             )
         }
     ) {
-        menuBar(onScreenChange, 2)
+        menuBar(onScreenChange , 2)
         profesorInputInsert(sql)
     }
 }

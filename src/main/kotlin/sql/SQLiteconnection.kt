@@ -66,18 +66,18 @@ object SQLiteconnection {
 
 class SQLiteCRUD {
 
-    fun insertAlumnos(nombreCompletoA: String, dniA: String){
+    fun insertAlumnos(nombreCompletoA: String , dniA: String) {
         val sql = "INSERT INTO alumnos (dniA, nombreCompletoA) VALUES (?, ?)"
 
         try {
             SQLiteconnection.connect()?.use { conn ->
                 conn.prepareStatement(sql).use { pstmt ->
-                    pstmt.setString(1, dniA)
-                    pstmt.setString(2, nombreCompletoA)
+                    pstmt.setString(1 , dniA)
+                    pstmt.setString(2 , nombreCompletoA)
                     pstmt.executeUpdate()
                 }
             }
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             if (e.message?.contains("UNIQUE constraint failed: alumnos.dniA") == true) {
                 throw Exception("el D.N.I del alumno ya existe")
             } else {
@@ -85,14 +85,15 @@ class SQLiteCRUD {
             }
         }
     }
-    fun insertProfesores(nombreCompletoP: String, dniP: String) {
+
+    fun insertProfesores(nombreCompletoP: String , dniP: String) {
         val sql = "INSERT INTO profesores (nombreCompletoP, dniP) VALUES (?, ?)"
 
         try {
             SQLiteconnection.connect()?.use { conn ->
                 conn.prepareStatement(sql).use { pstmt ->
-                    pstmt.setString(1, nombreCompletoP)
-                    pstmt.setString(2, dniP)
+                    pstmt.setString(1 , nombreCompletoP)
+                    pstmt.setString(2 , dniP)
                     pstmt.executeUpdate()
                 }
             }
@@ -104,14 +105,15 @@ class SQLiteCRUD {
             }
         }
     }
-    fun insertMaterias(dniP: String, materia: String) {
+
+    fun insertMaterias(dniP: String , materia: String) {
         val sql = "INSERT INTO materias (dniP, materia) VALUES (?, ?)"
 
         try {
             SQLiteconnection.connect()?.use { conn ->
                 conn.prepareStatement(sql).use { pstmt ->
-                    pstmt.setString(1, dniP)
-                    pstmt.setString(2, materia)
+                    pstmt.setString(1 , dniP)
+                    pstmt.setString(2 , materia)
                     pstmt.executeUpdate()
                 }
             }
@@ -123,16 +125,17 @@ class SQLiteCRUD {
             }
         }
     }
-    fun insertNotas(dniP: String, dniA: String, materia: String, nota: Double) {
+
+    fun insertNotas(dniP: String , dniA: String , materia: String , nota: Double) {
         val sql = "INSERT INTO notas (dniP, dniA, materia, nota) VALUES (?, ?, ?, ?)"
 
         try {
             SQLiteconnection.connect()?.use { conn ->
                 conn.prepareStatement(sql).use { pstmt ->
-                    pstmt.setString(1, dniP)
-                    pstmt.setString(2, dniA)
-                    pstmt.setString(3, materia)
-                    pstmt.setDouble(4, nota)
+                    pstmt.setString(1 , dniP)
+                    pstmt.setString(2 , dniA)
+                    pstmt.setString(3 , materia)
+                    pstmt.setDouble(4 , nota)
                     pstmt.executeUpdate()
                 }
             }
@@ -168,13 +171,13 @@ class SQLiteCRUD {
 
         SQLiteconnection.connect()?.use { conn ->
             conn.prepareStatement(sql).use { pstmt ->
-                pstmt.setString(1, "%$nombreCompletoA%")
+                pstmt.setString(1 , "%$nombreCompletoA%")
                 val resultSet = pstmt.executeQuery()
                 while (resultSet.next()) {
                     val row = listOf<Any>(
-                        resultSet.getString("alumno"),
-                        resultSet.getDouble("nota"),
-                        resultSet.getString("profesor"),
+                        resultSet.getString("alumno") ,
+                        resultSet.getDouble("nota") ,
+                        resultSet.getString("profesor") ,
                         resultSet.getString("materia")
                     )
                     data.add(row)
@@ -183,6 +186,7 @@ class SQLiteCRUD {
         }
         return data
     }
+
     fun selectAlumnosByDNIAndNotas(dniA: String): List<List<Any>> {
         val data = mutableListOf<List<Any>>()
         val sql = """
@@ -206,13 +210,13 @@ class SQLiteCRUD {
 
         SQLiteconnection.connect()?.use { conn ->
             conn.prepareStatement(sql).use { pstmt ->
-                pstmt.setString(1, "%$dniA%")
+                pstmt.setString(1 , "%$dniA%")
                 val resultSet = pstmt.executeQuery()
                 while (resultSet.next()) {
                     val row = listOf<Any>(
-                        resultSet.getString("alumno"),
-                        resultSet.getDouble("nota"),
-                        resultSet.getString("profesor"),
+                        resultSet.getString("alumno") ,
+                        resultSet.getDouble("nota") ,
+                        resultSet.getString("profesor") ,
                         resultSet.getString("materia")
                     )
                     data.add(row)
@@ -221,16 +225,17 @@ class SQLiteCRUD {
         }
         return data
     }
-    fun selectAlumnos(): List<List<Any>>{
+
+    fun selectAlumnos(): List<List<Any>> {
         val data = mutableListOf<List<Any>>()
         val sql = "SELECT * FROM alumnos;"
 
         SQLiteconnection.connect()?.use { conn ->
             conn.prepareStatement(sql).use { pstmt ->
                 val resultSet = pstmt.executeQuery()
-                while (resultSet.next()){
+                while (resultSet.next()) {
                     val row = listOf<Any>(
-                        resultSet.getString("nombreCompletoA"),
+                        resultSet.getString("nombreCompletoA") ,
                         resultSet.getString("dniA")
                     )
                     data.add(row)
@@ -241,16 +246,16 @@ class SQLiteCRUD {
         return data
     }
 
-    fun selectProfesores(): List<List<Any>>{
+    fun selectProfesores(): List<List<Any>> {
         val data = mutableListOf<List<Any>>()
         val sql = "SELECT * FROM profesores;"
 
         SQLiteconnection.connect()?.use { conn ->
             conn.prepareStatement(sql).use { pstmt ->
                 val resultSet = pstmt.executeQuery()
-                while (resultSet.next()){
+                while (resultSet.next()) {
                     val row = listOf<Any>(
-                        resultSet.getString("nombreCompletoP"),
+                        resultSet.getString("nombreCompletoP") ,
                         resultSet.getString("dniP")
                     )
                     data.add(row)
@@ -261,16 +266,16 @@ class SQLiteCRUD {
         return data
     }
 
-    fun selectMaterias(): List<List<Any>>{
+    fun selectMaterias(): List<List<Any>> {
         val data = mutableListOf<List<Any>>()
         val sql = "SELECT * FROM materias;"
 
         SQLiteconnection.connect()?.use { conn ->
             conn.prepareStatement(sql).use { pstmt ->
                 val resultSet = pstmt.executeQuery()
-                while (resultSet.next()){
+                while (resultSet.next()) {
                     val row = listOf<Any>(
-                        resultSet.getString("materia"),
+                        resultSet.getString("materia") ,
                         resultSet.getString("dniP")
                     )
                     data.add(row)
@@ -282,7 +287,7 @@ class SQLiteCRUD {
     }
 
     fun clearAllTables() {
-        val tables = listOf("alumnos", "profesores", "materias", "notas")
+        val tables = listOf("alumnos" , "profesores" , "materias" , "notas")
 
         SQLiteconnection.connect()?.use { conn ->
             tables.forEach { table ->

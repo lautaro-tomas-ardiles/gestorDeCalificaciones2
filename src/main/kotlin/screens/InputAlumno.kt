@@ -1,7 +1,9 @@
 package screens
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,28 +23,28 @@ fun alumnoInputText(sql: SqlViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(vertical = 35.dp),
-        verticalArrangement = Arrangement.Center,
+            .padding(vertical = 35.dp) ,
+        verticalArrangement = Arrangement.Center ,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         textBar(
-            value = nombreDelAlumno,
-            onValueChange = { nombreDelAlumno = it },
+            value = nombreDelAlumno ,
+            onValueChange = { nombreDelAlumno = it } ,
             label = "Nombre del alumno..."
         )
         Spacer(modifier = Modifier.padding(31.dp))
 
         textBar(
-            value = dniDelAlumno,
-            onValueChange = { dniDelAlumno = it },
+            value = dniDelAlumno ,
+            onValueChange = { dniDelAlumno = it } ,
             label = "D.N.I del alumno..."
         )
         Spacer(modifier = Modifier.padding(31.dp))
 
         addButton(
-            label = "Añadir",
+            label = "Añadir" ,
             onClick = {
-                sql.agregarAlumno(nombreDelAlumno, dniDelAlumno)
+                sql.agregarAlumno(nombreDelAlumno , dniDelAlumno)
                 nombreDelAlumno = ""
                 dniDelAlumno = ""
             }
@@ -63,15 +65,15 @@ fun mainInputAlumno(onScreenChange: (Int) -> Unit) {
         }
     }
     Scaffold(
-        backgroundColor = black,
+        backgroundColor = black ,
         snackbarHost = {
             SnackbarHost(
-                snackbarHostState,
+                snackbarHostState ,
                 snackbar = { data -> customSnackbar(data) }
             )
         }
     ) {
-        menuBar(onScreenChange, 1)
+        menuBar(onScreenChange , 1)
         alumnoInputText(sql)
     }
 

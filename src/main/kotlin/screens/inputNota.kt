@@ -1,25 +1,16 @@
-@file:OptIn(ExperimentalComposeUiApi::class)
-
 package screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import colors.black
-import colors.blue
-import colors.orange
 import sql.SqlViewModel
 import utilitis.addButton
 import utilitis.menuBar
@@ -65,25 +56,25 @@ fun notaInputInsert(sql: SqlViewModel) {
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(scroll)
-            .padding(vertical = 35.dp),
-        verticalArrangement = Arrangement.Center,
+            .padding(vertical = 35.dp) ,
+        verticalArrangement = Arrangement.Center ,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         textBar(
-            value = nota,
-            onValueChange = { nota = it },
+            value = nota ,
+            onValueChange = { nota = it } ,
             label = "Nota..."
         )
         Spacer(modifier = Modifier.padding(31.dp))
         // ALUMNO
         selectorBox(
-            label = "Seleccione alumno...",
-            expanded = expandedAlumno,
-            onExpandedChange = { expandedAlumno = it },
-            inputText = alumnoNombre,
-            onInputChange = { alumnoNombre = it },
-            options = alumnosFiltrados,
-            displayText = { "nombre: ${it[0]} | dni: ${it[1]}" },
+            label = "Seleccione alumno..." ,
+            expanded = expandedAlumno ,
+            onExpandedChange = { expandedAlumno = it } ,
+            inputText = alumnoNombre ,
+            onInputChange = { alumnoNombre = it } ,
+            options = alumnosFiltrados ,
+            displayText = { "nombre: ${it[0]} | dni: ${it[1]}" } ,
             onSelect = {
                 dniAlumno = it[1] as String
                 alumnoNombre = "nombre: ${it[0]} | dni: ${it[1]}"
@@ -93,13 +84,13 @@ fun notaInputInsert(sql: SqlViewModel) {
         Spacer(modifier = Modifier.padding(31.dp))
         // PROFESOR
         selectorBox(
-            label = "Seleccione profesor...",
-            expanded = expandedProfesor,
-            onExpandedChange = { expandedProfesor = it },
-            inputText = profesorNombre,
-            onInputChange = { profesorNombre = it },
-            options = profesoresFiltrados,
-            displayText = { "nombre: ${it[0]} | dni: ${it[1]}" },
+            label = "Seleccione profesor..." ,
+            expanded = expandedProfesor ,
+            onExpandedChange = { expandedProfesor = it } ,
+            inputText = profesorNombre ,
+            onInputChange = { profesorNombre = it } ,
+            options = profesoresFiltrados ,
+            displayText = { "nombre: ${it[0]} | dni: ${it[1]}" } ,
             onSelect = {
                 dniProfesor = it[1] as String
                 profesorNombre = "nombre: ${it[0]} | dni: ${it[1]}"
@@ -109,13 +100,13 @@ fun notaInputInsert(sql: SqlViewModel) {
         Spacer(modifier = Modifier.padding(31.dp))
         // MATERIA
         selectorBox(
-            label = "Seleccione materia...",
-            expanded = expandedMateria,
-            onExpandedChange = { expandedMateria = it },
-            inputText = materiaNombre,
-            onInputChange = { materiaNombre = it },
-            options = materiasFiltradas,
-            displayText = { "nombre: ${it[0]} | dni: ${it[1]}" },
+            label = "Seleccione materia..." ,
+            expanded = expandedMateria ,
+            onExpandedChange = { expandedMateria = it } ,
+            inputText = materiaNombre ,
+            onInputChange = { materiaNombre = it } ,
+            options = materiasFiltradas ,
+            displayText = { "nombre: ${it[0]} | dni: ${it[1]}" } ,
             onSelect = {
                 dniProfesor = it[1] as String
                 materiaNombre = it[0] as String
@@ -125,7 +116,7 @@ fun notaInputInsert(sql: SqlViewModel) {
         Spacer(modifier = Modifier.padding(31.dp))
 
         addButton(label = "Añadir") {
-            sql.agregarNota(dniProfesor, dniAlumno, materiaNombre, nota)
+            sql.agregarNota(dniProfesor , dniAlumno , materiaNombre , nota)
             nota = ""
             alumnoNombre = ""
             profesorNombre = ""
@@ -147,17 +138,17 @@ fun mainInputNota(onScreenChange: (Int) -> Unit) {
     }
 
     Scaffold(
-        backgroundColor = black,
+        backgroundColor = black ,
         snackbarHost = {
             SnackbarHost(
-                snackbarHostState,
+                snackbarHostState ,
                 snackbar = { data -> utilitis.customSnackbar(data) }
             )
         }
     ) {
         Column {
-            menuBar(onScreenChange, 4)
+            menuBar(onScreenChange , 4)
             notaInputInsert(sql)
         }
-    }    
+    }
 }
