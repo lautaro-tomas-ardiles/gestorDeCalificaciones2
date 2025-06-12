@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import colors.black
 import sql.SqlViewModel
-import utilitis.addButton
+import utilitis.button
 import utilitis.customSnackbar
 import utilitis.menuBar
 import utilitis.textBar
@@ -41,7 +41,7 @@ fun alumnoInputText(sql: SqlViewModel) {
         )
         Spacer(modifier = Modifier.padding(31.dp))
 
-        addButton(
+        button(
             label = "Añadir" ,
             onClick = {
                 sql.agregarAlumno(nombreDelAlumno , dniDelAlumno)

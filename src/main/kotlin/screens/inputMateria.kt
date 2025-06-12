@@ -1,13 +1,11 @@
 package screens
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import colors.black
@@ -59,7 +57,7 @@ fun materiaInputInsert(sql: SqlViewModel) {
         )
         Spacer(modifier = Modifier.padding(31.dp))
 
-        addButton(
+        button(
             label = "Añadir"
         ) {
             sql.agregarMateria(dniProfesor , nombreDeLaMateria)

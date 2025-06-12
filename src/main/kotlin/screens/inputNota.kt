@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import colors.black
 import sql.SqlViewModel
-import utilitis.addButton
+import utilitis.button
 import utilitis.menuBar
 import utilitis.selectorBox
 import utilitis.textBar
@@ -115,7 +115,7 @@ fun notaInputInsert(sql: SqlViewModel) {
         )
         Spacer(modifier = Modifier.padding(31.dp))
 
-        addButton(label = "Añadir") {
+        button(label = "Añadir") {
             sql.agregarNota(dniProfesor , dniAlumno , materiaNombre , nota)
             nota = ""
             alumnoNombre = ""

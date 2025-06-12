@@ -129,6 +129,10 @@ class SqlViewModel : ViewModel() {
         }
     }
 
+    fun listaDeAlumnosPorDNI(dni: String): List<List<Any>> {
+
+    }
+
     fun limpiarMensaje() {
         mensaje = null
     }

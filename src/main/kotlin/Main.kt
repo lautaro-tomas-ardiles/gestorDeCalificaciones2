@@ -17,7 +17,11 @@ fun app() {
 
         4 -> mainInputNota(onScreenChange = { currentScreen = it })
 
-        5 -> mainOutput(onScreenChange = { currentScreen = it })
+        5 -> mainListOfAlumnos(onScreenChange = { currentScreen = it })
+
+        6 -> mainListOfProfesores(onScreenChange = { currentScreen = it })
+
+        7 -> mainOutput(onScreenChange = { currentScreen = it })
     }
 }
 

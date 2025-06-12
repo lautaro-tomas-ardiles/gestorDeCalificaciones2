@@ -1,26 +1,22 @@
 package screens
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import colors.black
-import colors.blue
 import colors.orange
 import colors.red
-import sql.SQLiteCRUD
+import sql.SqlViewModel
+import utilitis.boxOfData
+import utilitis.button
+import utilitis.customSnackbar
 import utilitis.menuBar
+import utilitis.textBarForSearch
 
 @Composable
 fun search(
@@ -37,104 +33,34 @@ fun search(
         verticalAlignment = Alignment.CenterVertically ,
         horizontalArrangement = Arrangement.Center
     ) {
-        OutlinedTextField(
-            value = searchByName ,
-            onValueChange = { searchByName = it } ,
-            label = {
-                Text(
-                    text = "Nombre del alumno..." ,
-                    fontSize = MaterialTheme.typography.h6.fontSize
-                )
-            } ,
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = blue ,
-                unfocusedBorderColor = blue ,
-                focusedLabelColor = Color.White ,
-                unfocusedLabelColor = Color.LightGray
-            ) ,
-            textStyle = TextStyle(
-                fontSize = 17.sp ,
-                color = Color.White
-            ) ,
-            singleLine = true ,
-            shape = RoundedCornerShape(10.dp) ,
+        textBarForSearch(
+            value = searchByName,
+            onValueChange = { searchByName = it },
+            label = "Nombre del alumno",
             modifier = Modifier.weight(1f)
         )
-        Spacer(modifier = Modifier.padding(14.5.dp))
+        Spacer(modifier = Modifier.padding(14.dp))
 
-        OutlinedButton(
-            onClick = {
-                onSearchByName(searchByName)
-            } ,
-            shape = RoundedCornerShape(40.dp) ,
-            border = BorderStroke(
-                width = 2.dp ,
-                color = blue
-            ) ,
-            colors = ButtonDefaults.outlinedButtonColors(
-                backgroundColor = Color.Transparent ,
-            ) ,
-            content = {
-                Text(
-                    text = "Buscar por nombre" ,
-                    color = Color.White ,
-                    fontSize = MaterialTheme.typography.h6.fontSize ,
-                    fontWeight = FontWeight.Normal
-                )
-            } ,
-            modifier = Modifier.align(Alignment.CenterVertically)
-        )
+        button(
+            label = "Búsqueda por nombre"
+        ) {
+            onSearchByName(searchByName)
+        }
+        Spacer(modifier = Modifier.padding(14.dp))
 
-        Spacer(modifier = Modifier.padding(14.5.dp))
-
-        OutlinedTextField(
-            value = searchByDNI ,
-            onValueChange = { searchByDNI = it } ,
-            label = {
-                Text(
-                    text = "D.N.I del alumno..." ,
-                    fontSize = MaterialTheme.typography.h6.fontSize
-                )
-            } ,
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = blue ,
-                unfocusedBorderColor = blue ,
-                focusedLabelColor = Color.White ,
-                unfocusedLabelColor = Color.LightGray
-            ) ,
-            textStyle = TextStyle(
-                fontSize = 17.sp ,
-                color = Color.White
-            ) ,
-            singleLine = true ,
-            shape = RoundedCornerShape(10.dp) ,
+        textBarForSearch(
+            value = searchByDNI,
+            onValueChange = { searchByDNI = it },
+            label = "D.N.I del alumno...",
             modifier = Modifier.weight(1f)
-            //.width(470.dp)
         )
-        Spacer(modifier = Modifier.padding(14.5.dp))
+        Spacer(modifier = Modifier.padding(14.dp))
 
-        OutlinedButton(
-            onClick = {
-                onSearchByDNI(searchByDNI)
-            } ,
-            shape = RoundedCornerShape(40.dp) ,
-            border = BorderStroke(
-                width = 2.dp ,
-                color = blue
-            ) ,
-            colors = ButtonDefaults.outlinedButtonColors(
-                backgroundColor = Color.Transparent ,
-            ) ,
-            content = {
-                Text(
-                    text = "Buscar por dni" ,
-                    color = Color.White ,
-                    fontSize = MaterialTheme.typography.h6.fontSize ,
-                    fontWeight = FontWeight.Normal
-                )
-            } ,
-            modifier = Modifier.align(Alignment.CenterVertically)
-        )
+        button(
+            label = "Búsqueda por D.N.I"
+        ) {
+            onSearchByDNI(searchByDNI)
+        }
     }
 }
 
@@ -146,46 +72,15 @@ fun textsOutPut(data: List<List<Any>>) {
             .fillMaxSize()
     ) {
         //indica como se disponen los datos
-        Box(
-            modifier = Modifier
-                .border(
-                    width = 2.dp ,
-                    color = red ,
-                    shape = RoundedCornerShape(10)
-                )
-                .padding(
-                    vertical = 10.dp ,
-                    horizontal = 20.dp
-                )
-        ) {
-            Text(
-                text = "Nombre del alumno | nota | Nombre del profesor | materia" ,
-                fontSize = MaterialTheme.typography.h5.fontSize ,
-                color = Color.White
-            )
-        }
+        boxOfData(
+            data = listOf("Nombre Del alumno","Nota","Nombre del profesor","Materia"),
+            color = red
+        )
         Spacer(modifier = Modifier.padding(20.dp))
 
         LazyColumn {
             items(data) { data ->
-                Box(
-                    modifier = Modifier
-                        .border(
-                            width = 2.dp ,
-                            color = orange ,
-                            shape = RoundedCornerShape(10)
-                        )
-                        .padding(
-                            vertical = 10.dp ,
-                            horizontal = 20.dp
-                        )
-                ) {
-                    Text(
-                        text = "${data[0]} | ${data[1]} | ${data[2]} | ${data[3]}" ,
-                        fontSize = MaterialTheme.typography.h5.fontSize ,
-                        color = Color.White
-                    )
-                }
+                boxOfData(data,orange)
                 Spacer(modifier = Modifier.padding(20.dp))
             }
         }
@@ -194,20 +89,34 @@ fun textsOutPut(data: List<List<Any>>) {
 
 @Composable
 fun mainOutput(onScreenChange: (Int) -> Unit) {
-    val crud = SQLiteCRUD()
+    val sql = remember { SqlViewModel() }
     var estudiantes by remember { mutableStateOf(emptyList<List<Any>>()) }
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(sql.mensaje) {
+        sql.mensaje?.let {
+            snackbarHostState.showSnackbar(it)
+            sql.limpiarMensaje()
+        }
+    }
 
     Scaffold(
-        backgroundColor = black
+        backgroundColor = black,
+        snackbarHost = {
+            SnackbarHost(
+                snackbarHostState ,
+                snackbar = { data -> customSnackbar(data) }
+            )
+        }
     ) {
         Column {
-            menuBar(onScreenChange , 5)
+            menuBar(onScreenChange , 7)
             search(
                 onSearchByName = { search ->
-                    estudiantes = crud.selectAlumnosByNameAndNotas(search)
+                    estudiantes = sql.buscarAlumnoPorNombre(search)
                 } ,
                 onSearchByDNI = { search ->
-                    estudiantes = crud.selectAlumnosByDNIAndNotas(search)
+                    estudiantes = sql.buscarAlumnoPorDNI(search)
                 }
             )
             textsOutPut(estudiantes)

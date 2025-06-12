@@ -4,6 +4,7 @@ package utilitis
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -33,7 +34,7 @@ fun menuBar(
     // Obtener el ancho de la pantalla
     val screenWidth = LocalWindowInfo.current.containerSize.width.dp
     val boxWidth = screenWidth / 8 //ancho de las cajas
-    val superBoxWidth = screenWidth / 2 //la ultima
+    val superBoxWidth = ( screenWidth / 2 ) / 3 //la ultima
     Row {
         //alumno
         Box(
@@ -176,14 +177,14 @@ fun menuBar(
                 .padding(7.dp)
         ) {
             Text(
-                text = "Materia" ,
-                fontSize = MaterialTheme.typography.subtitle1.fontSize ,
+                text = "Materia",
+                fontSize = MaterialTheme.typography.subtitle1.fontSize,
                 color = if (selectedScreen == 3) black else Color.White
             )
         }
         //nota
         Box(
-            contentAlignment = Alignment.Center ,
+            contentAlignment = Alignment.Center,
             modifier = Modifier
                 .width(boxWidth)
                 .background(color = if (selectedScreen == 4) orange else blue)
@@ -192,30 +193,30 @@ fun menuBar(
 
                     // Borde izquierdo
                     drawLine(
-                        color = if (selectedScreen == 4) red else Color.Transparent ,
-                        start = Offset(0f , 0f) ,
-                        end = Offset(0f , size.height) ,
+                        color = if (selectedScreen == 4) red else Color.Transparent,
+                        start = Offset(0f, 0f),
+                        end = Offset(0f, size.height),
                         strokeWidth = strokeWidth
                     )
                     // Borde derecho
                     drawLine(
-                        color = if (selectedScreen == 4) red else Color.Transparent ,
-                        start = Offset(size.width - strokeWidth / 2 , 0f) ,
-                        end = Offset(size.width - strokeWidth / 2 , size.height) ,
+                        color = if (selectedScreen == 4) red else Color.Transparent,
+                        start = Offset(size.width - strokeWidth / 2, 0f),
+                        end = Offset(size.width - strokeWidth / 2, size.height),
                         strokeWidth = strokeWidth
                     )
                     // Borde inferior
                     drawLine(
-                        color = if (selectedScreen == 4) red else Color.Transparent ,
-                        start = Offset(0f , size.height - strokeWidth / 2) ,
-                        end = Offset(size.width , size.height - strokeWidth / 2) ,
+                        color = if (selectedScreen == 4) red else Color.Transparent,
+                        start = Offset(0f, size.height - strokeWidth / 2),
+                        end = Offset(size.width, size.height - strokeWidth / 2),
                         strokeWidth = strokeWidth
                     )
                     // Borde superior
                     drawLine(
-                        color = if (selectedScreen != 4) red else Color.Transparent ,
-                        start = Offset(0f , strokeWidth / 2) ,
-                        end = Offset(size.width , strokeWidth / 2) ,
+                        color = if (selectedScreen != 4) red else Color.Transparent,
+                        start = Offset(0f, strokeWidth / 2),
+                        end = Offset(size.width, strokeWidth / 2),
                         strokeWidth = strokeWidth
                     )
                 }
@@ -225,47 +226,41 @@ fun menuBar(
                 .padding(7.dp)
         ) {
             Text(
-                text = "Nota" ,
-                fontSize = MaterialTheme.typography.subtitle1.fontSize ,
+                text = "Nota",
+                fontSize = MaterialTheme.typography.subtitle1.fontSize,
                 color = if (selectedScreen == 4) black else Color.White
             )
         }
-        //búsqueda
+        //test#1
         Box(
-            contentAlignment = Alignment.Center ,
+            contentAlignment = Alignment.Center,
             modifier = Modifier
                 .width(superBoxWidth)
                 .background(color = if (selectedScreen == 5) orange else blue)
                 .drawBehind {
                     val strokeWidth = 4.dp.toPx()
-
-                    // Borde superior
                     drawLine(
-                        color = if (selectedScreen != 5) red else Color.Transparent ,
-                        start = Offset(0f , strokeWidth / 2) ,
-                        end = Offset(size.width , strokeWidth / 2) ,
+                        color = if (selectedScreen == 5) red else Color.Transparent,
+                        start = Offset(0f, 0f),
+                        end = Offset(0f, size.height),
                         strokeWidth = strokeWidth
                     )
-
-                    // Borde derecho
                     drawLine(
-                        color = if (selectedScreen != 5) red else Color.Transparent ,
-                        start = Offset(size.width - strokeWidth / 2 , 0f) ,
-                        end = Offset(size.width - strokeWidth / 2 , size.height) ,
-                        strokeWidth = strokeWidth * 2
-                    )
-                    // Borde izquierdo
-                    drawLine(
-                        color = if (selectedScreen == 5) red else Color.Transparent ,
-                        start = Offset(0f , 0f) ,
-                        end = Offset(0f , size.height) ,
+                        color = if (selectedScreen == 5) red else Color.Transparent,
+                        start = Offset(size.width - strokeWidth / 2, 0f),
+                        end = Offset(size.width - strokeWidth / 2, size.height),
                         strokeWidth = strokeWidth
                     )
-                    // Borde inferior
                     drawLine(
-                        color = if (selectedScreen == 5) red else Color.Transparent ,
-                        start = Offset(0f , size.height - strokeWidth / 2) ,
-                        end = Offset(size.width , size.height - strokeWidth / 2) ,
+                        color = if (selectedScreen == 5) red else Color.Transparent,
+                        start = Offset(0f, size.height - strokeWidth / 2),
+                        end = Offset(size.width, size.height - strokeWidth / 2),
+                        strokeWidth = strokeWidth
+                    )
+                    drawLine(
+                        color = if (selectedScreen != 5) red else Color.Transparent,
+                        start = Offset(0f, strokeWidth / 2),
+                        end = Offset(size.width, strokeWidth / 2),
                         strokeWidth = strokeWidth
                     )
                 }
@@ -275,12 +270,106 @@ fun menuBar(
                 .padding(7.dp)
         ) {
             Text(
-                text = "Búsqueda de datos" ,
-                fontSize = MaterialTheme.typography.subtitle1.fontSize ,
+                text = "Test#1",
+                fontSize = MaterialTheme.typography.subtitle1.fontSize,
                 color = if (selectedScreen == 5) black else Color.White
             )
         }
 
+        //test#2
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .width(superBoxWidth)
+                .background(color = if (selectedScreen == 6) orange else blue)
+                .drawBehind {
+                    val strokeWidth = 4.dp.toPx()
+                    drawLine(
+                        color = if (selectedScreen == 6) red else Color.Transparent,
+                        start = Offset(0f, 0f),
+                        end = Offset(0f, size.height),
+                        strokeWidth = strokeWidth
+                    )
+                    drawLine(
+                        color = if (selectedScreen == 6) red else Color.Transparent,
+                        start = Offset(size.width - strokeWidth / 2, 0f),
+                        end = Offset(size.width - strokeWidth / 2, size.height),
+                        strokeWidth = strokeWidth
+                    )
+                    drawLine(
+                        color = if (selectedScreen == 6) red else Color.Transparent,
+                        start = Offset(0f, size.height - strokeWidth / 2),
+                        end = Offset(size.width, size.height - strokeWidth / 2),
+                        strokeWidth = strokeWidth
+                    )
+                    drawLine(
+                        color = if (selectedScreen != 6) red else Color.Transparent,
+                        start = Offset(0f, strokeWidth / 2),
+                        end = Offset(size.width, strokeWidth / 2),
+                        strokeWidth = strokeWidth
+                    )
+                }
+                .clickable {
+                    onScreenChange(6)
+                }
+                .padding(7.dp)
+        ) {
+            Text(
+                text = "Test#2",
+                fontSize = MaterialTheme.typography.subtitle1.fontSize,
+                color = if (selectedScreen == 6) black else Color.White
+            )
+        }
+        //búsqueda
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .width(superBoxWidth)
+                .background(color = if (selectedScreen == 7) orange else blue)
+                .drawBehind {
+                    val strokeWidth = 4.dp.toPx()
+
+                    // Borde superior
+                    drawLine(
+                        color = if (selectedScreen != 7) red else Color.Transparent,
+                        start = Offset(0f, strokeWidth / 2),
+                        end = Offset(size.width, strokeWidth / 2),
+                        strokeWidth = strokeWidth
+                    )
+
+                    // Borde derecho
+                    drawLine(
+                        color = if (selectedScreen != 7) red else Color.Transparent,
+                        start = Offset(size.width - strokeWidth / 2, 0f),
+                        end = Offset(size.width - strokeWidth / 2, size.height),
+                        strokeWidth = strokeWidth * 2
+                    )
+                    // Borde izquierdo
+                    drawLine(
+                        color = if (selectedScreen == 7) red else Color.Transparent,
+                        start = Offset(0f, 0f),
+                        end = Offset(0f, size.height),
+                        strokeWidth = strokeWidth
+                    )
+                    // Borde inferior
+                    drawLine(
+                        color = if (selectedScreen == 7) red else Color.Transparent,
+                        start = Offset(0f, size.height - strokeWidth / 2),
+                        end = Offset(size.width, size.height - strokeWidth / 2),
+                        strokeWidth = strokeWidth
+                    )
+                }
+                .clickable {
+                    onScreenChange(7)
+                }
+                .padding(7.dp)
+        ) {
+            Text(
+                text = "Búsqueda de datos" ,
+                fontSize = MaterialTheme.typography.subtitle1.fontSize ,
+                color = if (selectedScreen == 7) black else Color.White
+            )
+        }
     }
 }
 
@@ -323,61 +412,40 @@ fun textBar(
 }
 
 @Composable
-fun dropdownSelector(
-    value: String ,
-    onValueChange: (String) -> Unit ,
-    label: String ,
-    expanded: Boolean ,
-    onExpandedChange: (Boolean) -> Unit ,
-    opciones: List<List<Any>> ,
-    onItemSelected: (String , String) -> Unit ,
-    getLabel: (List<Any>) -> String
+fun textBarForSearch(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    modifier: Modifier = Modifier
 ) {
-    Box {
-        textBar(
-            value = value ,
-            onValueChange = {
-                onValueChange(it)
-                onExpandedChange(true)
-            } ,
-            label = label ,
-            trailingIcon = {
-                IconButton(onClick = { onExpandedChange(!expanded) }) {
-                    Icon(
-                        painter = painterResource(if (expanded) "close.svg" else "search.svg") ,
-                        contentDescription = "search" ,
-                        tint = orange ,
-                        modifier = Modifier.size(30.dp)
-                    )
-                }
-            }
-        )
-
-        DropdownMenu(
-            expanded = expanded ,
-            onDismissRequest = { onExpandedChange(false) } ,
-            modifier = Modifier
-                .fillMaxWidth(0.5f)
-                .background(black)
-        ) {
-            opciones.forEach {
-                val nombre = it[0] as String
-                val id = it[1] as String
-
-                DropdownMenuItem(onClick = {
-                    onItemSelected(nombre , id)
-                    onExpandedChange(false)
-                }) {
-                    Text(text = getLabel(it) , color = orange)
-                }
-            }
-        }
-    }
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = {
+            Text(
+                text = label ,
+                fontSize = MaterialTheme.typography.subtitle2.fontSize
+            )
+        },
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = blue,
+            unfocusedBorderColor = blue,
+            focusedLabelColor = Color.White,
+            unfocusedLabelColor = Color.White,
+            cursorColor = Color.White
+        ),
+        textStyle = TextStyle(
+            fontSize = 15.sp,
+            color = Color.White
+        ),
+        singleLine = true,
+        shape = RoundedCornerShape(10.dp),
+        modifier = modifier
+    )
 }
 
-
 @Composable
-fun addButton(
+fun button(
     label: String ,
     onClick: () -> Unit
 ) {
@@ -467,5 +535,27 @@ fun selectorBox(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun boxOfData(data: List<Any>,color: Color) {
+    Box(
+        modifier = Modifier
+            .border(
+                width = 2.dp,
+                color = color,
+                shape = RoundedCornerShape(10)
+            )
+            .padding(
+                vertical = 10.dp,
+                horizontal = 20.dp
+            )
+    ) {
+        Text(
+            text = data.joinToString(separator = " | ") { it.toString() },
+            fontSize = MaterialTheme.typography.h6.fontSize,
+            color = Color.White
+        )
     }
 }
