@@ -226,6 +226,7 @@ class SQLiteCRUD {
     }
 
     //para la lista de alumnos
+    //por dni
     fun listOfAlumnosByDNI(dniA: String): List<List<Any>> {
         val data = mutableListOf<List<Any>>()
         val query = """
@@ -241,6 +242,52 @@ class SQLiteCRUD {
         SQLiteConnection.connect()?.use { conn ->
             conn.prepareStatement(query).use { stmt ->
                 stmt.setString(1, "%$dniA%")
+                val resultSet = stmt.executeQuery()
+                while (resultSet.next()) {
+                    val row = listOf<Any>(
+                        resultSet.getString(1),
+                        resultSet.getString(2)
+                    )
+                    data.add(row)
+                }
+            }
+        }
+        return data
+    }
+
+    fun deleteAlumnoByDNI(dniA: String) {
+        val query = """
+            DELETE 
+            FROM
+                alumnos
+            WHERE
+                dniA = ?
+            ;
+        """.trimIndent()
+
+        SQLiteConnection.connect()?.use { conn ->
+            conn.prepareStatement(query).use { stmt ->
+                stmt.setString(1, dniA)
+                stmt.executeUpdate()
+            }
+        }
+    }
+    //por nombre
+    fun listOfAlumnosByNombre(name: String): List<List<Any>> {
+        val data = mutableListOf<List<Any>>()
+        val query = """
+            SELECT 
+                alumnos.nombreCompletoA,
+                alumnos.dniA
+            FROM
+                alumnos
+            WHERE
+                alumnos.nombreCompletoA LIKE ?
+            ;
+        """.trimIndent()
+        SQLiteConnection.connect()?.use { conn ->
+            conn.prepareStatement(query).use { stmt ->
+                stmt.setString(1, "%$name%")
                 val resultSet = stmt.executeQuery()
                 while (resultSet.next()) {
                     val row = listOf<Any>(

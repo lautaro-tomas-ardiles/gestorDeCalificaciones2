@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.concurrent.Executor
 
 class SqlViewModel : ViewModel() {
     private val crud = SQLiteCRUD()
@@ -130,7 +131,30 @@ class SqlViewModel : ViewModel() {
     }
 
     fun listaDeAlumnosPorDNI(dni: String): List<List<Any>> {
+        return try {
+            crud.listOfAlumnosByDNI(dni)
+        }catch (e: Exception) {
+            mensaje = "Error: ${e.message}"
+            emptyList()
+        }
+    }
 
+    fun eliminarAlumnoPorDNI(dni: String) {
+        try {
+            crud.deleteAlumnoByDNI(dni)
+            mensaje = "Alumno eliminado correctamente"
+        }catch (e: Exception) {
+            mensaje = "Error: ${e.message}"
+        }
+    }
+
+    fun listaDeAlumnosPorNombre(nombre: String): List<List<Any>> {
+        return try {
+            crud.listOfAlumnosByNombre(nombre)
+        }catch (e: Exception) {
+            mensaje = "Error: ${e.message}"
+            emptyList()
+        }
     }
 
     fun limpiarMensaje() {

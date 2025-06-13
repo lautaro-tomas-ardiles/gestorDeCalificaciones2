@@ -270,7 +270,7 @@ fun menuBar(
                 .padding(7.dp)
         ) {
             Text(
-                text = "Test#1",
+                text = "Lista de alumno",
                 fontSize = MaterialTheme.typography.subtitle1.fontSize,
                 color = if (selectedScreen == 5) black else Color.White
             )
