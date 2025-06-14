@@ -157,6 +157,33 @@ class SqlViewModel : ViewModel() {
         }
     }
 
+    fun listaDeProfesoresPorDNI(dni: String): List<List<Any>> {
+        return try {
+            crud.listOfProfesoresByDNI(dni)
+        }catch (e: Exception) {
+            mensaje = "Error: ${e.message}"
+            emptyList()
+        }
+    }
+
+    fun eliminarProfesorPorDNI(dni: String) {
+        try {
+            crud.deleteProfesorByDNI(dni)
+            mensaje = "Alumno eliminado correctamente"
+        }catch (e: Exception) {
+            mensaje = "Error: ${e.message}"
+        }
+    }
+
+    fun listaDeProfesoresPorNombre(nombre: String): List<List<Any>> {
+        return try {
+            crud.listOfProfesoresByNombre(nombre)
+        }catch (e: Exception) {
+            mensaje = "Error: ${e.message}"
+            emptyList()
+        }
+    }
+
     fun limpiarMensaje() {
         mensaje = null
     }

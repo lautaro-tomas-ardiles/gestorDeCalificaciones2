@@ -10,6 +10,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -231,7 +235,7 @@ fun menuBar(
                 color = if (selectedScreen == 4) black else Color.White
             )
         }
-        //test#1
+        //Lista de alumno
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
@@ -276,7 +280,7 @@ fun menuBar(
             )
         }
 
-        //test#2
+        //Lista de profesores
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
@@ -315,7 +319,7 @@ fun menuBar(
                 .padding(7.dp)
         ) {
             Text(
-                text = "Test#2",
+                text = "Lista de profesores",
                 fontSize = MaterialTheme.typography.subtitle1.fontSize,
                 color = if (selectedScreen == 6) black else Color.White
             )
@@ -450,9 +454,7 @@ fun button(
     onClick: () -> Unit
 ) {
     OutlinedButton(
-        onClick = {
-            onClick()
-        } ,
+        onClick = { onClick() },
         border = BorderStroke(
             width = 2.dp ,
             color = blue
@@ -504,14 +506,18 @@ fun selectorBox(
             label = label ,
             trailingIcon = {
                 IconButton(
-                    onClick = { onExpandedChange(!expanded) } ,
-                    modifier = Modifier.size(30.dp)
+                    onClick = { onExpandedChange(!expanded) },
+                    modifier = Modifier.size(35.dp)
                 ) {
                     Icon(
-                        painter = if (expanded) painterResource("close.svg") else painterResource("search.svg") ,
-                        contentDescription = "search" ,
-                        tint = orange ,
-                        modifier = Modifier.size(30.dp)
+                        painter =
+                            if (expanded)
+                                painterResource("close_24dp.svg")
+                            else
+                                painterResource("search_24dp.svg"),
+                        contentDescription = "search",
+                        tint = orange,
+                        modifier = Modifier.size(35.dp)
                     )
                 }
             }
@@ -557,5 +563,52 @@ fun boxOfData(data: List<Any>,color: Color) {
             fontSize = MaterialTheme.typography.h6.fontSize,
             color = Color.White
         )
+    }
+}
+
+@Composable
+fun search(
+    onSearchByName: (String) -> Unit,
+    onSearchByDNI: (String) -> Unit,
+    isAlumno: Boolean = true
+) {
+    var searchByName by remember { mutableStateOf("") }
+    var searchByDNI by remember { mutableStateOf("") }
+
+    Row(
+        modifier = Modifier
+            .padding(vertical = 30.dp , horizontal = 20.dp)
+            .fillMaxWidth() ,
+        verticalAlignment = Alignment.CenterVertically ,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        textBarForSearch(
+            value = searchByName,
+            onValueChange = { searchByName = it },
+            label = if (isAlumno) "Nombre del alumno" else "Nombre del profesor",
+            modifier = Modifier.weight(1f)
+        )
+        Spacer(modifier = Modifier.padding(14.dp))
+
+        button(
+            label = "Búsqueda por nombre"
+        ) {
+            onSearchByName(searchByName)
+        }
+        Spacer(modifier = Modifier.padding(14.dp))
+
+        textBarForSearch(
+            value = searchByDNI,
+            onValueChange = { searchByDNI = it },
+            label = if (isAlumno) "D.N.I del alumno..." else "D.N.I del profesor...",
+            modifier = Modifier.weight(1f)
+        )
+        Spacer(modifier = Modifier.padding(14.dp))
+
+        button(
+            label = "Búsqueda por D.N.I"
+        ) {
+            onSearchByDNI(searchByDNI)
+        }
     }
 }

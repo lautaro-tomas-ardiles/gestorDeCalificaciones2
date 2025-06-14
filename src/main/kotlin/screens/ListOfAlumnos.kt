@@ -26,9 +26,10 @@ import utilitis.boxOfData
 import utilitis.button
 import utilitis.customSnackbar
 import utilitis.menuBar
+import utilitis.search
 
 @Composable
-fun ListOutPut(
+fun ListOfAlumnosOutPut(
     data: List<List<Any>>,
     sql: SqlViewModel,
     onRefresh: () -> Unit
@@ -49,7 +50,7 @@ fun ListOutPut(
                 Row {
                     boxOfData(row, orange)
                     Spacer(modifier = Modifier.padding(5.dp))
-                    button("x") {
+                    button("×") {
                         val dni = row[1] as String
                         sql.eliminarAlumnoPorDNI(dni)
                         onRefresh()
@@ -60,7 +61,6 @@ fun ListOutPut(
         }
     }
 }
-
 
 @Composable
 fun mainListOfAlumnos(onScreenChange: (Int) -> Unit) {
@@ -75,7 +75,7 @@ fun mainListOfAlumnos(onScreenChange: (Int) -> Unit) {
         }
     }
 
-    fun refreshList(query: String, isDNI : Boolean = true) {
+    fun refreshList(query: String, isDNI: Boolean = true) {
         estudiantes = if (isDNI) {
             sql.listaDeAlumnosPorDNI(query)
         }else {
@@ -110,7 +110,7 @@ fun mainListOfAlumnos(onScreenChange: (Int) -> Unit) {
                     refreshList(str, false)
                 }
             )
-            ListOutPut(
+            ListOfAlumnosOutPut(
                 data = estudiantes,
                 sql = sql,
                 onRefresh = { refreshList(lastQuery) }

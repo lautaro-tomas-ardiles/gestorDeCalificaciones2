@@ -301,6 +301,82 @@ class SQLiteCRUD {
         return data
     }
 
+    //lista de profesores
+    fun listOfProfesoresByDNI(dniP: String): List<List<Any>> {
+        val data = mutableListOf<List<Any>>()
+        val query = """
+            SELECT 
+                profesores.nombreCompletoP,
+                profesores.dniP
+            FROM
+                profesores
+            WHERE
+                profesores.dniP LIKE ?
+            ;
+        """.trimIndent()
+
+        SQLiteConnection.connect()?.use { conn ->
+            conn.prepareStatement(query).use { stmt ->
+                stmt.setString(1, "%$dniP%")
+                val resultSet = stmt.executeQuery()
+                while (resultSet.next()) {
+                    val row = listOf<Any>(
+                        resultSet.getString(1),
+                        resultSet.getString(2)
+                    )
+                    data.add(row)
+                }
+            }
+        }
+        return data
+    }
+
+    fun deleteProfesorByDNI(dniP: String) {
+        val query = """
+            DELETE 
+            FROM
+                profesores
+            WHERE
+                dniP = ?
+            ;
+        """.trimIndent()
+
+        SQLiteConnection.connect()?.use { conn ->
+            conn.prepareStatement(query).use { stmt ->
+                stmt.setString(1, dniP)
+                stmt.executeUpdate()
+            }
+        }
+    }
+    //por nombre
+    fun listOfProfesoresByNombre(name: String): List<List<Any>> {
+        val data = mutableListOf<List<Any>>()
+        val query = """
+            SELECT 
+                profesores.nombreCompletoP,
+                profesores.dniP
+            FROM
+                profesores
+            WHERE
+                profesores.nombreCompletoP LIKE ?
+            ;
+        """.trimIndent()
+        SQLiteConnection.connect()?.use { conn ->
+            conn.prepareStatement(query).use { stmt ->
+                stmt.setString(1, "%$name%")
+                val resultSet = stmt.executeQuery()
+                while (resultSet.next()) {
+                    val row = listOf<Any>(
+                        resultSet.getString(1),
+                        resultSet.getString(2)
+                    )
+                    data.add(row)
+                }
+            }
+        }
+        return data
+    }
+
     //para limpiar la db
     fun clearAllTables() {
         val tables = listOf("alumnos" , "profesores" , "materias" , "notas")
