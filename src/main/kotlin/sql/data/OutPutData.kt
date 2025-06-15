@@ -1,4 +1,4 @@
-package sql
+package sql.data
 
 data class OutPutData(
     val nombreDelProfesor: String,

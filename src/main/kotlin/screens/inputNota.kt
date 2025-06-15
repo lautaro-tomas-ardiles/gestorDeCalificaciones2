@@ -11,7 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import colors.black
-import sql.NotaData
+import sql.data.NotaData
 import sql.SqlViewModel
 import utilitis.button
 import utilitis.menuBar

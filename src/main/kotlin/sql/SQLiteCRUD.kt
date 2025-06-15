@@ -1,5 +1,11 @@
 package sql
 
+import sql.data.AlumnoData
+import sql.data.MateriaData
+import sql.data.NotaData
+import sql.data.OutPutData
+import sql.data.ProfesorData
+
 class SQLiteCRUD {
 
     //ingreso de datos a db
@@ -116,9 +122,9 @@ class SQLiteCRUD {
                 while (resultSet.next()) {
                     data.add(
                         OutPutData(
-                            nombreDelAlumno = resultSet.getString(1) ,
-                            nota = resultSet.getDouble(2) ,
-                            nombreDelProfesor = resultSet.getString(3) ,
+                            nombreDelAlumno = resultSet.getString(1),
+                            nota = resultSet.getDouble(2),
+                            nombreDelProfesor = resultSet.getString(3),
                             nombreDeLaMateria = resultSet.getString(4),
                             dniDelAlumno = resultSet.getString(5),
                             dniDelProfesor = resultSet.getString(6)
@@ -160,9 +166,9 @@ class SQLiteCRUD {
                 while (resultSet.next()) {
                     data.add(
                         OutPutData(
-                            nombreDelAlumno = resultSet.getString(1) ,
-                            nota = resultSet.getDouble(2) ,
-                            nombreDelProfesor = resultSet.getString(3) ,
+                            nombreDelAlumno = resultSet.getString(1),
+                            nota = resultSet.getDouble(2),
+                            nombreDelProfesor = resultSet.getString(3),
                             nombreDeLaMateria = resultSet.getString(4),
                             dniDelAlumno = resultSet.getString(5),
                             dniDelProfesor = resultSet.getString(6)

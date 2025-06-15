@@ -7,7 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.concurrent.Executor
+import sql.data.AlumnoData
+import sql.data.MateriaData
+import sql.data.NotaData
+import sql.data.OutPutData
+import sql.data.ProfesorData
 
 class SqlViewModel : ViewModel() {
     private val crud = SQLiteCRUD()
@@ -23,7 +27,7 @@ class SqlViewModel : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                crud.insertAlumnos(AlumnoData(nombreAlumno,dniAlumno))
+                crud.insertAlumnos(AlumnoData(nombreAlumno, dniAlumno))
                 mensaje = "Alumno agregado correctamente."
             } catch (e: Exception) {
                 mensaje = "Error: ${e.message}"
@@ -39,7 +43,7 @@ class SqlViewModel : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                crud.insertProfesores(ProfesorData(nombreProfesor,dniProfesor))
+                crud.insertProfesores(ProfesorData(nombreProfesor, dniProfesor))
                 mensaje = "Profesor agregado correctamente."
             } catch (e: Exception) {
                 mensaje = "Error: ${e.message}"
@@ -55,7 +59,7 @@ class SqlViewModel : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                crud.insertMaterias(MateriaData(materia,dniProfeMateria))
+                crud.insertMaterias(MateriaData(materia, dniProfeMateria))
                 mensaje = "Materia agregada correctamente."
             } catch (e: Exception) {
                 mensaje = "Error: ${e.message}"

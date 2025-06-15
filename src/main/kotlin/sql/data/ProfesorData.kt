@@ -1,6 +1,6 @@
-package sql
+package sql.data
 
-data class AlumnoData(
+data class ProfesorData(
     val nombre: String,
     val dni: String
 )

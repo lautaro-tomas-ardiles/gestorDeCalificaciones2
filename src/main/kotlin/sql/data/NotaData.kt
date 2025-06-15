@@ -1,4 +1,4 @@
-package sql
+package sql.data
 
 data class NotaData(
     val dniDelProfesor: String,

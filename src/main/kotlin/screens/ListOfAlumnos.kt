@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import colors.black
 import colors.orange
 import colors.red
-import sql.AlumnoData
+import sql.data.AlumnoData
 import sql.SqlViewModel
 import utilitis.boxOfData
 import utilitis.button

@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 import colors.black
 import colors.orange
 import colors.red
-import sql.OutPutData
+import sql.data.OutPutData
 import sql.SqlViewModel
 import utilitis.boxOfData
 import utilitis.button

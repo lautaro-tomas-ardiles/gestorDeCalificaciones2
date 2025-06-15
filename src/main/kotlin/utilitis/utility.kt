@@ -28,7 +28,7 @@ import colors.black
 import colors.blue
 import colors.orange
 import colors.red
-import sql.AlumnoData
+import sql.data.AlumnoData
 
 @Composable
 fun menuBar(
