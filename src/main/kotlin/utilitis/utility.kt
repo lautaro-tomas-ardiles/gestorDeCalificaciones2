@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -29,22 +28,19 @@ import colors.black
 import colors.blue
 import colors.orange
 import colors.red
+import sql.AlumnoData
 
 @Composable
 fun menuBar(
     onScreenChange: (Int) -> Unit ,
     selectedScreen: Int
 ) {
-    // Obtener el ancho de la pantalla
-    val screenWidth = LocalWindowInfo.current.containerSize.width.dp
-    val boxWidth = screenWidth / 8 //ancho de las cajas
-    val superBoxWidth = ( screenWidth / 2 ) / 3 //la ultima
     Row {
         //alumno
         Box(
             contentAlignment = Alignment.Center ,
             modifier = Modifier
-                .width(boxWidth)
+                .weight(1f)
                 .background(color = if (selectedScreen == 1) orange else blue)
                 .drawBehind {
                     val strokeWidth = 4.dp.toPx()
@@ -92,7 +88,7 @@ fun menuBar(
         Box(
             contentAlignment = Alignment.Center ,
             modifier = Modifier
-                .width(boxWidth)
+                .weight(1f)
                 .background(color = if (selectedScreen == 2) orange else blue)
                 .drawBehind {
                     val strokeWidth = 4.dp.toPx()
@@ -141,7 +137,7 @@ fun menuBar(
         Box(
             contentAlignment = Alignment.Center ,
             modifier = Modifier
-                .width(boxWidth)
+                .weight(1f)
                 .background(color = if (selectedScreen == 3) orange else blue)
                 .drawBehind {
                     val strokeWidth = 4.dp.toPx()
@@ -190,7 +186,7 @@ fun menuBar(
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .width(boxWidth)
+                .weight(1f)
                 .background(color = if (selectedScreen == 4) orange else blue)
                 .drawBehind {
                     val strokeWidth = 4.dp.toPx()
@@ -239,7 +235,7 @@ fun menuBar(
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .width(superBoxWidth)
+                .weight(1f)
                 .background(color = if (selectedScreen == 5) orange else blue)
                 .drawBehind {
                     val strokeWidth = 4.dp.toPx()
@@ -284,7 +280,7 @@ fun menuBar(
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .width(superBoxWidth)
+                .weight(1f)
                 .background(color = if (selectedScreen == 6) orange else blue)
                 .drawBehind {
                     val strokeWidth = 4.dp.toPx()
@@ -328,7 +324,7 @@ fun menuBar(
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .width(superBoxWidth)
+                .weight(1f)
                 .background(color = if (selectedScreen == 7) orange else blue)
                 .drawBehind {
                     val strokeWidth = 4.dp.toPx()
@@ -489,33 +485,32 @@ fun customSnackbar(snackbarData: SnackbarData) {
 }
 
 @Composable
-fun selectorBox(
-    label: String ,
-    expanded: Boolean ,
-    onExpandedChange: (Boolean) -> Unit ,
-    inputText: String ,
-    onInputChange: (String) -> Unit ,
-    options: List<List<Any>> ,
-    displayText: (List<Any>) -> String ,
-    onSelect: (List<Any>) -> Unit
+fun <T> selectorBox(
+    label: String,
+    expanded: Boolean,
+    onExpandedChange: (Boolean) -> Unit,
+    inputText: String,
+    onInputChange: (String) -> Unit,
+    options: List<T>,
+    displayText: (T) -> String,
+    onSelect: (T) -> Unit
 ) {
     Box {
         textBar(
-            value = inputText ,
-            onValueChange = onInputChange ,
-            label = label ,
+            value = inputText,
+            onValueChange = onInputChange,
+            label = label,
             trailingIcon = {
                 IconButton(
                     onClick = { onExpandedChange(!expanded) },
                     modifier = Modifier.size(35.dp)
                 ) {
                     Icon(
-                        painter =
-                            if (expanded)
-                                painterResource("close_24dp.svg")
-                            else
-                                painterResource("search_24dp.svg"),
-                        contentDescription = "search",
+                        painter = if (expanded)
+                            painterResource("close_24dp.svg")
+                        else
+                            painterResource("search_24dp.svg"),
+                        contentDescription = "toggle",
                         tint = orange,
                         modifier = Modifier.size(35.dp)
                     )
@@ -524,18 +519,21 @@ fun selectorBox(
         )
 
         DropdownMenu(
-            expanded = expanded ,
-            onDismissRequest = { onExpandedChange(false) } ,
+            expanded = expanded,
+            onDismissRequest = { onExpandedChange(false) },
             modifier = Modifier
                 .fillMaxWidth(0.5f)
                 .background(black)
         ) {
             options.forEach { item ->
                 DropdownMenuItem(
-                    onClick = { onSelect(item) }
+                    onClick = {
+                        onSelect(item)
+                        onExpandedChange(false)
+                    }
                 ) {
                     Text(
-                        text = displayText(item) ,
+                        text = displayText(item),
                         color = orange
                     )
                 }
@@ -545,7 +543,7 @@ fun selectorBox(
 }
 
 @Composable
-fun boxOfData(data: List<Any>,color: Color) {
+fun <T> boxOfData(data: List<T>,color: Color) {
     Box(
         modifier = Modifier
             .border(

@@ -14,56 +14,55 @@ import utilitis.*
 
 @Composable
 fun materiaInputInsert(sql: SqlViewModel) {
-    var nombreDeLaMateria by remember { mutableStateOf("") }
 
-    var selectedProfesor by remember { mutableStateOf("") }
+    var nombreDeLaMateria by remember { mutableStateOf("") }
     var profesorNombre by remember { mutableStateOf("") }
     var dniProfesor by remember { mutableStateOf("") }
 
     var expandedProfesor by remember { mutableStateOf(false) }
+
     val profesores = remember { sql.obtenerProfesores() }
+
     val profesoresFiltrados = profesores.filter {
-        val nombre = (it[0] as? String)?.lowercase() ?: ""
-        nombre.contains(profesorNombre.lowercase())
+        it.nombre.lowercase().contains(profesorNombre.lowercase()) ||
+        it.dni.lowercase().contains(profesorNombre.lowercase())
     }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(vertical = 35.dp) ,
-        verticalArrangement = Arrangement.Center ,
+            .padding(vertical = 35.dp),
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         textBar(
-            value = nombreDeLaMateria ,
-            onValueChange = { nombreDeLaMateria = it } ,
+            value = nombreDeLaMateria,
+            onValueChange = { nombreDeLaMateria = it },
             label = "Nombre de la materia"
         )
         Spacer(modifier = Modifier.padding(31.dp))
+
         // PROFESOR
         selectorBox(
-            label = "Seleccione profesor..." ,
-            expanded = expandedProfesor ,
-            onExpandedChange = { expandedProfesor = it } ,
-            inputText = profesorNombre ,
-            onInputChange = { profesorNombre = it } ,
-            options = profesoresFiltrados ,
-            displayText = { "nombre: ${it[0]} | dni: ${it[1]}" } ,
+            label = "Seleccione profesor...",
+            expanded = expandedProfesor,
+            onExpandedChange = { expandedProfesor = it },
+            inputText = profesorNombre,
+            onInputChange = { profesorNombre = it },
+            options = profesoresFiltrados,
+            displayText = { "nombre: ${it.nombre} | dni: ${it.dni}" },
             onSelect = {
-                dniProfesor = it[1] as String
-                profesorNombre = "nombre: ${it[0]} | dni: ${it[1]}"
+                dniProfesor = it.dni
+                profesorNombre = "nombre: ${it.nombre} | dni: ${it.dni}"
                 expandedProfesor = false
             }
         )
         Spacer(modifier = Modifier.padding(31.dp))
 
-        button(
-            label = "Añadir"
-        ) {
-            sql.agregarMateria(dniProfesor , nombreDeLaMateria)
+        button(label = "Añadir") {
+            sql.agregarMateria(dniProfesor, nombreDeLaMateria)
             nombreDeLaMateria = ""
             dniProfesor = ""
-            selectedProfesor = ""
             profesorNombre = ""
         }
     }

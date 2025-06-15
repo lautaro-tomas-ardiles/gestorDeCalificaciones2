@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import colors.black
+import sql.NotaData
 import sql.SqlViewModel
 import utilitis.button
 import utilitis.menuBar
@@ -22,8 +23,10 @@ fun notaInputInsert(sql: SqlViewModel) {
     val scroll = rememberScrollState()
     var nota by remember { mutableStateOf("") }
 
-    var alumnoNombre by remember { mutableStateOf("") }
-    var profesorNombre by remember { mutableStateOf("") }
+    var selectedAlumno by remember { mutableStateOf("") }
+    var selectedProfesor by remember { mutableStateOf("") }
+    var selectedMateria by remember { mutableStateOf("") }
+
     var materiaNombre by remember { mutableStateOf("") }
 
     var dniAlumno by remember { mutableStateOf("") }
@@ -38,89 +41,112 @@ fun notaInputInsert(sql: SqlViewModel) {
     val materias = remember { sql.obtenerMaterias() }
 
     val alumnosFiltrados = alumnos.filter {
-        val nombre = (it[0] as? String)?.lowercase() ?: ""
-        nombre.contains(alumnoNombre.lowercase())
+        it.nombre.lowercase().contains(selectedAlumno.lowercase()) ||
+        it.dni.lowercase().contains(selectedAlumno.lowercase())
     }
+
     val profesoresFiltrados = profesores.filter {
-        val nombre = (it[0] as? String)?.lowercase() ?: ""
-        nombre.contains(profesorNombre.lowercase())
+        it.nombre.lowercase().contains(selectedProfesor.lowercase()) ||
+        it.dni.lowercase().contains(selectedProfesor.lowercase())
     }
-    val materiasFiltradas = materias.filter {
-        val nombre = (it[0] as? String)?.lowercase() ?: ""
-        nombre.contains(materiaNombre.lowercase())
-        val profesorDni = (it[1] as? String)?.lowercase() ?: ""
-        profesorDni.contains(dniProfesor.lowercase())
+
+    val materiasFiltradas = if (dniProfesor.isNotEmpty()) {
+        materias.filter {
+            it.nombre.lowercase().contains(selectedMateria.lowercase()) &&
+                    it.dniDelProfesor == dniProfesor
+        }
+    } else {
+        emptyList()
     }
+
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(scroll)
-            .padding(vertical = 35.dp) ,
-        verticalArrangement = Arrangement.Center ,
+            .padding(vertical = 35.dp),
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         textBar(
-            value = nota ,
-            onValueChange = { nota = it } ,
+            value = nota,
+            onValueChange = { nota = it },
             label = "Nota..."
         )
         Spacer(modifier = Modifier.padding(31.dp))
+
         // ALUMNO
         selectorBox(
-            label = "Seleccione alumno..." ,
-            expanded = expandedAlumno ,
-            onExpandedChange = { expandedAlumno = it } ,
-            inputText = alumnoNombre ,
-            onInputChange = { alumnoNombre = it } ,
-            options = alumnosFiltrados ,
-            displayText = { "nombre: ${it[0]} | dni: ${it[1]}" } ,
+            label = "Seleccione alumno...",
+            expanded = expandedAlumno,
+            onExpandedChange = { expandedAlumno = it },
+            inputText = selectedAlumno,
+            onInputChange = { selectedAlumno = it },
+            options = alumnosFiltrados,
+            displayText = { "nombre: ${it.nombre} | dni: ${it.dni}" },
             onSelect = {
-                dniAlumno = it[1] as String
-                alumnoNombre = "nombre: ${it[0]} | dni: ${it[1]}"
+                dniAlumno = it.dni
+                selectedAlumno = "nombre: ${it.nombre} | dni: ${it.dni}"
                 expandedAlumno = false
             }
         )
+
         Spacer(modifier = Modifier.padding(31.dp))
+
         // PROFESOR
         selectorBox(
-            label = "Seleccione profesor..." ,
-            expanded = expandedProfesor ,
-            onExpandedChange = { expandedProfesor = it } ,
-            inputText = profesorNombre ,
-            onInputChange = { profesorNombre = it } ,
-            options = profesoresFiltrados ,
-            displayText = { "nombre: ${it[0]} | dni: ${it[1]}" } ,
+            label = "Seleccione profesor...",
+            expanded = expandedProfesor,
+            onExpandedChange = { expandedProfesor = it },
+            inputText = selectedProfesor,
+            onInputChange = { selectedProfesor = it },
+            options = profesoresFiltrados,
+            displayText = { "nombre: ${it.nombre} | dni: ${it.dni}" },
             onSelect = {
-                dniProfesor = it[1] as String
-                profesorNombre = "nombre: ${it[0]} | dni: ${it[1]}"
+                dniProfesor = it.dni
+                selectedProfesor = "nombre: ${it.nombre} | dni: ${it.dni}"
                 expandedProfesor = false
             }
         )
+
         Spacer(modifier = Modifier.padding(31.dp))
+
         // MATERIA
         selectorBox(
-            label = "Seleccione materia..." ,
-            expanded = expandedMateria ,
-            onExpandedChange = { expandedMateria = it } ,
-            inputText = materiaNombre ,
-            onInputChange = { materiaNombre = it } ,
-            options = materiasFiltradas ,
-            displayText = { "nombre: ${it[0]} | dni: ${it[1]}" } ,
+            label = "Seleccione materia...",
+            expanded = expandedMateria,
+            onExpandedChange = { expandedMateria = it },
+            inputText = selectedMateria,
+            onInputChange = { selectedMateria = it },
+            options = materiasFiltradas,
+            displayText = { "nombre: ${it.nombre} | dni del profesor: ${it.dniDelProfesor}" },
             onSelect = {
-                dniProfesor = it[1] as String
-                materiaNombre = it[0] as String
+                selectedMateria = "nombre: ${it.nombre} | dni del profesor: ${it.dniDelProfesor}"
+                materiaNombre = it.nombre
                 expandedMateria = false
             }
         )
+
         Spacer(modifier = Modifier.padding(31.dp))
 
         button(label = "Añadir") {
-            sql.agregarNota(dniProfesor , dniAlumno , materiaNombre , nota)
+            sql.agregarNota(
+                NotaData(
+                    dniProfesor,
+                    nota.toDouble(),
+                    dniAlumno,
+                    materiaNombre
+                )
+            )
+
+            // Reset
             nota = ""
-            alumnoNombre = ""
-            profesorNombre = ""
+            selectedAlumno = ""
+            selectedProfesor = ""
+            selectedMateria = ""
             materiaNombre = ""
+            dniAlumno = ""
+            dniProfesor = ""
         }
     }
 }

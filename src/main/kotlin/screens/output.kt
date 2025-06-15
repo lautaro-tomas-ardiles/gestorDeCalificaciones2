@@ -10,14 +10,20 @@ import androidx.compose.ui.unit.dp
 import colors.black
 import colors.orange
 import colors.red
+import sql.OutPutData
 import sql.SqlViewModel
 import utilitis.boxOfData
+import utilitis.button
 import utilitis.customSnackbar
 import utilitis.menuBar
 import utilitis.search
 
 @Composable
-fun textsOutPut(data: List<List<Any>>) {
+fun textsOutPut(
+    data: List<OutPutData>,
+    sql: SqlViewModel,
+    onRefresh: () -> Unit
+) {
     Column(
         modifier = Modifier
             .padding(start = 30.dp)
@@ -31,8 +37,18 @@ fun textsOutPut(data: List<List<Any>>) {
         Spacer(modifier = Modifier.padding(20.dp))
 
         LazyColumn {
-            items(data) { data ->
-                boxOfData(data,orange)
+            items(data) {it ->
+                Row {
+                    boxOfData(
+                        listOf(it.nombreDelAlumno, it.nota, it.nombreDelProfesor, it.nombreDeLaMateria),
+                        orange
+                    )
+                    Spacer(modifier = Modifier.padding(5.dp))
+                    button("×") {
+                        sql.eliminarNotaPorDNI(it.dniDelAlumno)
+                        onRefresh()
+                    }
+                }
                 Spacer(modifier = Modifier.padding(20.dp))
             }
         }
@@ -42,8 +58,22 @@ fun textsOutPut(data: List<List<Any>>) {
 @Composable
 fun mainOutput(onScreenChange: (Int) -> Unit) {
     val sql = remember { SqlViewModel() }
-    var estudiantes by remember { mutableStateOf(emptyList<List<Any>>()) }
+    var estudiantes by remember { mutableStateOf(emptyList<OutPutData>()) }
     val snackbarHostState = remember { SnackbarHostState() }
+
+    fun refreshList(query: String, isDNI: Boolean = true) {
+        estudiantes = if (isDNI) {
+            sql.buscarAlumnoPorDNI(query)
+        }else {
+            sql.buscarAlumnoPorNombre(query)
+        }
+    }
+
+    var lastQuery by remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        estudiantes = sql.buscarAlumnoPorNombre("")
+    }
 
     LaunchedEffect(sql.mensaje) {
         sql.mensaje?.let {
@@ -65,13 +95,17 @@ fun mainOutput(onScreenChange: (Int) -> Unit) {
             menuBar(onScreenChange , 7)
             search(
                 onSearchByName = { search ->
-                    estudiantes = sql.buscarAlumnoPorNombre(search)
+                    lastQuery = search
+                    refreshList(lastQuery,false)
                 } ,
                 onSearchByDNI = { search ->
-                    estudiantes = sql.buscarAlumnoPorDNI(search)
+                    lastQuery = search
+                    refreshList(lastQuery)
                 }
             )
-            textsOutPut(estudiantes)
+            textsOutPut(estudiantes, sql){
+                refreshList(lastQuery)
+            }
         }
     }
 }

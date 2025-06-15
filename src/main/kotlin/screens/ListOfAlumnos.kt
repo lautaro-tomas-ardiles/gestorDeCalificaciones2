@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import colors.black
 import colors.orange
 import colors.red
+import sql.AlumnoData
 import sql.SqlViewModel
 import utilitis.boxOfData
 import utilitis.button
@@ -30,7 +31,7 @@ import utilitis.search
 
 @Composable
 fun ListOfAlumnosOutPut(
-    data: List<List<Any>>,
+    data: List<AlumnoData>,
     sql: SqlViewModel,
     onRefresh: () -> Unit
 ) {
@@ -46,13 +47,15 @@ fun ListOfAlumnosOutPut(
         Spacer(modifier = Modifier.padding(20.dp))
 
         LazyColumn {
-            items(data) { row ->
+            items(data) { it ->
                 Row {
-                    boxOfData(row, orange)
+                    boxOfData(
+                        listOf(it.nombre, it.dni),
+                        orange
+                    )
                     Spacer(modifier = Modifier.padding(5.dp))
                     button("×") {
-                        val dni = row[1] as String
-                        sql.eliminarAlumnoPorDNI(dni)
+                        sql.eliminarAlumnoPorDNI(it.dni)
                         onRefresh()
                     }
                 }
@@ -65,7 +68,7 @@ fun ListOfAlumnosOutPut(
 @Composable
 fun mainListOfAlumnos(onScreenChange: (Int) -> Unit) {
     val sql = remember { SqlViewModel() }
-    var estudiantes by remember { mutableStateOf(emptyList<List<Any>>()) }
+    var estudiantes by remember { mutableStateOf(emptyList<AlumnoData>()) }
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(sql.mensaje) {

@@ -23,7 +23,7 @@ class SqlViewModel : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                crud.insertAlumnos(nombreAlumno , dniAlumno)
+                crud.insertAlumnos(AlumnoData(nombreAlumno,dniAlumno))
                 mensaje = "Alumno agregado correctamente."
             } catch (e: Exception) {
                 mensaje = "Error: ${e.message}"
@@ -39,7 +39,7 @@ class SqlViewModel : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                crud.insertProfesores(nombreProfesor , dniProfesor)
+                crud.insertProfesores(ProfesorData(nombreProfesor,dniProfesor))
                 mensaje = "Profesor agregado correctamente."
             } catch (e: Exception) {
                 mensaje = "Error: ${e.message}"
@@ -55,7 +55,7 @@ class SqlViewModel : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                crud.insertMaterias(dniProfeMateria , materia)
+                crud.insertMaterias(MateriaData(materia,dniProfeMateria))
                 mensaje = "Materia agregada correctamente."
             } catch (e: Exception) {
                 mensaje = "Error: ${e.message}"
@@ -63,21 +63,19 @@ class SqlViewModel : ViewModel() {
         }
     }
 
-    fun agregarNota(dniNotaP: String , dniNotaA: String , materiaNota: String , nota: String) {
-        if (dniNotaP.isBlank() || dniNotaA.isBlank() || materiaNota.isBlank() || nota.isBlank()) {
+    fun agregarNota(data: NotaData) {
+        if (
+            data.dniDelProfesor.isBlank() ||
+            data.dniDelAlumno.isBlank() ||
+            data.nombreDeLaMateria.isBlank()
+        ) {
             mensaje = "Todos los campos son obligatorios para registrar una nota."
-            return
-        }
-
-        val notaDouble = nota.toDoubleOrNull()
-        if (notaDouble == null) {
-            mensaje = "La nota debe ser un número válido."
             return
         }
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                crud.insertNotas(dniNotaP , dniNotaA , materiaNota , notaDouble)
+                crud.insertNotas(data)
                 mensaje = "Nota agregada correctamente."
             } catch (e: Exception) {
                 mensaje = "Error: ${e.message}"
@@ -85,7 +83,7 @@ class SqlViewModel : ViewModel() {
         }
     }
 
-    fun obtenerAlumnos(): List<List<Any>> {
+    fun obtenerAlumnos(): List<AlumnoData> {
         return try {
             crud.selectAlumnos()
         } catch (e: Exception) {
@@ -94,7 +92,7 @@ class SqlViewModel : ViewModel() {
         }
     }
 
-    fun obtenerProfesores(): List<List<Any>> {
+    fun obtenerProfesores(): List<ProfesorData> {
         return try {
             crud.selectProfesores()
         } catch (e: Exception) {
@@ -103,7 +101,7 @@ class SqlViewModel : ViewModel() {
         }
     }
 
-    fun obtenerMaterias(): List<List<Any>> {
+    fun obtenerMaterias(): List<MateriaData> {
         return try {
             crud.selectMaterias()
         } catch (e: Exception) {
@@ -112,7 +110,7 @@ class SqlViewModel : ViewModel() {
         }
     }
 
-    fun buscarAlumnoPorNombre(nombre: String): List<List<Any>> {
+    fun buscarAlumnoPorNombre(nombre: String): List<OutPutData> {
         return try {
             crud.selectAlumnosByNameAndNotas(nombre)
         } catch (e: Exception) {
@@ -121,7 +119,7 @@ class SqlViewModel : ViewModel() {
         }
     }
 
-    fun buscarAlumnoPorDNI(dni: String): List<List<Any>> {
+    fun buscarAlumnoPorDNI(dni: String): List<OutPutData> {
         return try {
             crud.selectAlumnosByDNIAndNotas(dni)
         } catch (e: Exception) {
@@ -130,7 +128,16 @@ class SqlViewModel : ViewModel() {
         }
     }
 
-    fun listaDeAlumnosPorDNI(dni: String): List<List<Any>> {
+    fun eliminarNotaPorDNI(dni: String) {
+        try {
+            crud.deleteNotaByDni(dni)
+            mensaje = "Nota eliminado correctamente"
+        }catch (e: Exception) {
+            mensaje = "Error: ${e.message}"
+        }
+    }
+
+    fun listaDeAlumnosPorDNI(dni: String): List<AlumnoData> {
         return try {
             crud.listOfAlumnosByDNI(dni)
         }catch (e: Exception) {
@@ -148,7 +155,7 @@ class SqlViewModel : ViewModel() {
         }
     }
 
-    fun listaDeAlumnosPorNombre(nombre: String): List<List<Any>> {
+    fun listaDeAlumnosPorNombre(nombre: String): List<AlumnoData> {
         return try {
             crud.listOfAlumnosByNombre(nombre)
         }catch (e: Exception) {
@@ -157,7 +164,7 @@ class SqlViewModel : ViewModel() {
         }
     }
 
-    fun listaDeProfesoresPorDNI(dni: String): List<List<Any>> {
+    fun listaDeProfesoresPorDNI(dni: String): List<ProfesorData> {
         return try {
             crud.listOfProfesoresByDNI(dni)
         }catch (e: Exception) {
@@ -175,7 +182,7 @@ class SqlViewModel : ViewModel() {
         }
     }
 
-    fun listaDeProfesoresPorNombre(nombre: String): List<List<Any>> {
+    fun listaDeProfesoresPorNombre(nombre: String): List<ProfesorData> {
         return try {
             crud.listOfProfesoresByNombre(nombre)
         }catch (e: Exception) {
