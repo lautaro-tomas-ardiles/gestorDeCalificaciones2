@@ -3,18 +3,14 @@ package screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import colors.black
 import sql.data.NotaData
 import sql.SqlViewModel
 import utilitis.button
-import utilitis.menuBar
 import utilitis.selectorBox
 import utilitis.textBar
 
@@ -152,9 +148,8 @@ fun notaInputInsert(sql: SqlViewModel) {
 }
 
 @Composable
-fun mainInputNota(onScreenChange: (Int) -> Unit) {
+fun mainInputNota(snackbarHostState: SnackbarHostState) {
     val sql = remember { SqlViewModel() }
-    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(sql.mensaje) {
         sql.mensaje?.let {
@@ -163,18 +158,5 @@ fun mainInputNota(onScreenChange: (Int) -> Unit) {
         }
     }
 
-    Scaffold(
-        backgroundColor = black ,
-        snackbarHost = {
-            SnackbarHost(
-                snackbarHostState ,
-                snackbar = { data -> utilitis.customSnackbar(data) }
-            )
-        }
-    ) {
-        Column {
-            menuBar(onScreenChange , 4)
-            notaInputInsert(sql)
-        }
-    }
+    notaInputInsert(sql)
 }

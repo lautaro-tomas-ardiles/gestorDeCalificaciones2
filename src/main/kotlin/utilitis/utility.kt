@@ -3,6 +3,12 @@
 package utilitis
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -21,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -92,8 +99,8 @@ fun menuItem(
 
 @Composable
 fun menuBar(
-    onScreenChange: (Int) -> Unit,
-    selectedScreen: Int
+    selectedScreen: Int,
+    onScreenChange: (Int) -> Unit
 ) {
     Row {
         //Alumno
@@ -157,14 +164,14 @@ fun menuBar(
 
 /**
  * La function textBar permite la entrada de texto permitiendo un aspecto consistent en las entradas de texto
- * y la function textBarForSearch es igual excepto que usa un modifier para las modificaciones
  */
 @Composable
 fun textBar(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
-    trailingIcon: (@Composable (() -> Unit))? = null
+    trailingIcon: (@Composable (() -> Unit))? = null,
+    modifier: Modifier = Modifier.fillMaxWidth(0.5f)
 ) {
     OutlinedTextField(
         value = value,
@@ -187,44 +194,10 @@ fun textBar(
             color = Color.White
         ),
         singleLine = true,
-        modifier = Modifier
-            .fillMaxWidth(0.5f)
+        modifier = modifier
             .padding(4.dp),
         maxLines = 1,
         trailingIcon = trailingIcon
-    )
-}
-
-@Composable
-fun textBarForSearch(
-    value: String,
-    onValueChange: (String) -> Unit,
-    label: String,
-    modifier: Modifier = Modifier
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = {
-            Text(
-                text = label,
-                fontSize = MaterialTheme.typography.subtitle2.fontSize
-            )
-        },
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = blue,
-            unfocusedBorderColor = blue,
-            focusedLabelColor = Color.White,
-            unfocusedLabelColor = Color.White,
-            cursorColor = Color.White
-        ),
-        textStyle = TextStyle(
-            fontSize = 15.sp,
-            color = Color.White
-        ),
-        singleLine = true,
-        shape = RoundedCornerShape(10.dp),
-        modifier = modifier
     )
 }
 
@@ -298,19 +271,44 @@ fun <T> selectorBox(
                     onClick = { onExpandedChange(!expanded) },
                     modifier = Modifier.size(35.dp)
                 ) {
-                    AnimatedVisibility(expanded){
+                    AnimatedVisibility(
+                        visible = expanded,
+                        enter = scaleIn(
+                            animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+                            initialScale = 0.0f,
+                            transformOrigin = TransformOrigin.Center
+                        ),
+                        exit = scaleOut(
+                            animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+                            targetScale = 0.0f,
+                            transformOrigin = TransformOrigin.Center
+                        )
+                    ) {
                         Icon(
                             painter = painterResource("close_24dp.svg"),
                             contentDescription = "close",
-                            tint = blue,
+                            tint = orange,
                             modifier = Modifier.size(35.dp)
                         )
                     }
-                    AnimatedVisibility(!expanded){
+
+                    AnimatedVisibility(
+                        visible = !expanded,
+                        enter = scaleIn(
+                            animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+                            initialScale = 0.0f,
+                            transformOrigin = TransformOrigin.Center
+                        ),
+                        exit = scaleOut(
+                            animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+                            targetScale = 0.0f,
+                            transformOrigin = TransformOrigin.Center
+                        )
+                    ) {
                         Icon(
                             painter = painterResource("search_24dp.svg"),
-                            contentDescription = "close",
-                            tint = blue,
+                            contentDescription = "search",
+                            tint = orange,
                             modifier = Modifier.size(35.dp)
                         )
                     }
@@ -326,16 +324,30 @@ fun <T> selectorBox(
                 .background(black)
         ) {
             options.forEach { item ->
-                DropdownMenuItem(
-                    onClick = {
-                        onSelect(item)
-                        onExpandedChange(false)
-                    }
-                ) {
-                    Text(
-                        text = displayText(item),
-                        color = orange
+                AnimatedVisibility(
+                    visible = true, // visible siempre, pero animado al aparecer
+                    enter = scaleIn(
+                        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+                        initialScale = 0.0f,
+                        transformOrigin = TransformOrigin.Center
+                    ),
+                    exit = scaleOut(
+                        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+                        targetScale = 0.0f,
+                        transformOrigin = TransformOrigin.Center
                     )
+                ) {
+                    DropdownMenuItem(
+                        onClick = {
+                            onSelect(item)
+                            onExpandedChange(false)
+                        }
+                    ) {
+                        Text(
+                            text = displayText(item),
+                            color = orange
+                        )
+                    }
                 }
             }
         }
@@ -386,7 +398,7 @@ fun search(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-        textBarForSearch(
+        textBar(
             value = searchByName,
             onValueChange = { searchByName = it },
             label = if (isAlumno) "Nombre del alumno" else "Nombre del profesor",
@@ -401,7 +413,7 @@ fun search(
         }
         Spacer(modifier = Modifier.padding(14.dp))
 
-        textBarForSearch(
+        textBar(
             value = searchByDNI,
             onValueChange = { searchByDNI = it },
             label = if (isAlumno) "D.N.I del alumno..." else "D.N.I del profesor...",

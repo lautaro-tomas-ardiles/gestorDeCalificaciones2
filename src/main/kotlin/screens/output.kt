@@ -7,15 +7,12 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import colors.black
 import colors.orange
 import colors.red
 import sql.data.OutPutData
 import sql.SqlViewModel
 import utilitis.boxOfData
 import utilitis.button
-import utilitis.customSnackbar
-import utilitis.menuBar
 import utilitis.search
 
 @Composable
@@ -56,10 +53,9 @@ fun textsOutPut(
 }
 
 @Composable
-fun mainOutput(onScreenChange: (Int) -> Unit) {
+fun mainOutput(snackbarHostState: SnackbarHostState) {
     val sql = remember { SqlViewModel() }
     var estudiantes by remember { mutableStateOf(emptyList<OutPutData>()) }
-    val snackbarHostState = remember { SnackbarHostState() }
 
     fun refreshList(query: String, isDNI: Boolean = true) {
         estudiantes = if (isDNI) {
@@ -82,30 +78,19 @@ fun mainOutput(onScreenChange: (Int) -> Unit) {
         }
     }
 
-    Scaffold(
-        backgroundColor = black,
-        snackbarHost = {
-            SnackbarHost(
-                snackbarHostState ,
-                snackbar = { data -> customSnackbar(data) }
-            )
-        }
-    ) {
-        Column {
-            menuBar(onScreenChange , 7)
-            search(
-                onSearchByName = { search ->
-                    lastQuery = search
-                    refreshList(lastQuery,false)
-                } ,
-                onSearchByDNI = { search ->
-                    lastQuery = search
-                    refreshList(lastQuery)
-                }
-            )
-            textsOutPut(estudiantes, sql){
+    Column {
+        search(
+            onSearchByName = { search ->
+                lastQuery = search
+                refreshList(lastQuery, false)
+            },
+            onSearchByDNI = { search ->
+                lastQuery = search
                 refreshList(lastQuery)
             }
+        )
+        textsOutPut(estudiantes, sql) {
+            refreshList(lastQuery)
         }
     }
 }

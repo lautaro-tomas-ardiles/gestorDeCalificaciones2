@@ -1,18 +1,13 @@
 package screens
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import colors.black
 import sql.SqlViewModel
 import utilitis.button
-import utilitis.customSnackbar
-import utilitis.menuBar
 import utilitis.textBar
 
 @Composable
@@ -53,9 +48,9 @@ fun alumnoInputText(sql: SqlViewModel) {
 }
 
 @Composable
-fun mainInputAlumno(onScreenChange: (Int) -> Unit) {
+fun mainInputAlumno(snackbarHostState: SnackbarHostState) {
     val sql = remember { SqlViewModel() }
-    val snackbarHostState = remember { SnackbarHostState() }
+    //val snackbarHostState = remember { SnackbarHostState() }
 
     // Mostrar mensaje cuando cambie
     LaunchedEffect(sql.mensaje) {
@@ -64,17 +59,5 @@ fun mainInputAlumno(onScreenChange: (Int) -> Unit) {
             sql.limpiarMensaje()
         }
     }
-    Scaffold(
-        backgroundColor = black ,
-        snackbarHost = {
-            SnackbarHost(
-                snackbarHostState ,
-                snackbar = { data -> customSnackbar(data) }
-            )
-        }
-    ) {
-        menuBar(onScreenChange , 1)
-        alumnoInputText(sql)
-    }
-
+    alumnoInputText(sql)
 }

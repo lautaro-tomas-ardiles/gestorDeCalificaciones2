@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -18,15 +16,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import colors.black
 import colors.orange
 import colors.red
 import sql.data.AlumnoData
 import sql.SqlViewModel
 import utilitis.boxOfData
 import utilitis.button
-import utilitis.customSnackbar
-import utilitis.menuBar
 import utilitis.search
 
 @Composable
@@ -66,10 +61,9 @@ fun ListOfAlumnosOutPut(
 }
 
 @Composable
-fun mainListOfAlumnos(onScreenChange: (Int) -> Unit) {
+fun mainListOfAlumnos(snackbarHostState: SnackbarHostState) {
     val sql = remember { SqlViewModel() }
     var estudiantes by remember { mutableStateOf(emptyList<AlumnoData>()) }
-    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(sql.mensaje) {
         sql.mensaje?.let {
@@ -91,33 +85,21 @@ fun mainListOfAlumnos(onScreenChange: (Int) -> Unit) {
     LaunchedEffect(Unit) {
         estudiantes = sql.listaDeAlumnosPorDNI("")
     }
-
-    Scaffold(
-        backgroundColor = black,
-        snackbarHost = {
-            SnackbarHost(
-                snackbarHostState,
-                snackbar = { data -> customSnackbar(data) }
-            )
-        }
-    ) {
-        Column {
-            menuBar(onScreenChange, 5)
-            search(
-                onSearchByDNI = { str ->
-                    lastQuery = str
-                    refreshList(str, true)
-                },
-                onSearchByName = { str ->
-                    lastQuery = str
-                    refreshList(str, false)
-                }
-            )
-            ListOfAlumnosOutPut(
-                data = estudiantes,
-                sql = sql,
-                onRefresh = { refreshList(lastQuery) }
-            )
-        }
+    Column {
+        search(
+            onSearchByDNI = { str ->
+                lastQuery = str
+                refreshList(str, true)
+            },
+            onSearchByName = { str ->
+                lastQuery = str
+                refreshList(str, false)
+            }
+        )
+        ListOfAlumnosOutPut(
+            data = estudiantes,
+            sql = sql,
+            onRefresh = { refreshList(lastQuery) }
+        )
     }
 }

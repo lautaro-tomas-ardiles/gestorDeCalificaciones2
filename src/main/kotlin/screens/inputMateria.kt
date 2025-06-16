@@ -1,14 +1,11 @@
 package screens
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import colors.black
 import sql.SqlViewModel
 import utilitis.*
 
@@ -69,9 +66,9 @@ fun materiaInputInsert(sql: SqlViewModel) {
 }
 
 @Composable
-fun mainInputMateria(onScreenChange: (Int) -> Unit) {
+fun mainInputMateria(snackbarHostState: SnackbarHostState) {
     val sql = remember { SqlViewModel() }
-    val snackbarHostState = remember { SnackbarHostState() }
+    //val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(sql.mensaje) {
         sql.mensaje?.let {
@@ -79,17 +76,5 @@ fun mainInputMateria(onScreenChange: (Int) -> Unit) {
             sql.limpiarMensaje()
         }
     }
-
-    Scaffold(
-        backgroundColor = black ,
-        snackbarHost = {
-            SnackbarHost(
-                snackbarHostState ,
-                snackbar = { data -> customSnackbar(data) }
-            )
-        }
-    ) {
-        menuBar(onScreenChange , 3)
-        materiaInputInsert(sql)
-    }
+    materiaInputInsert(sql)
 }
