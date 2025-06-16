@@ -2,6 +2,7 @@
 
 package utilitis
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -28,385 +29,168 @@ import colors.black
 import colors.blue
 import colors.orange
 import colors.red
-import sql.data.AlumnoData
 
+/**
+ * Las funciones menuBar y menuItem se encargan se la barra que permite el cambio
+ * de pantallas. Menu item tiene los items con su borde texto y aspecto, menu bar
+ * contiene los items
+ */
 @Composable
-fun menuBar(
-    onScreenChange: (Int) -> Unit ,
-    selectedScreen: Int
+fun menuItem(
+    isSelected: Boolean,
+    title: String,
+    modifier: Modifier,
+    onClick: () -> Unit
 ) {
-    Row {
-        //alumno
-        Box(
-            contentAlignment = Alignment.Center ,
-            modifier = Modifier
-                .weight(1f)
-                .background(color = if (selectedScreen == 1) orange else blue)
-                .drawBehind {
-                    val strokeWidth = 4.dp.toPx()
-                    // Borde izquierdo
-                    drawLine(
-                        color = red ,
-                        start = Offset(0f , 0f) ,
-                        end = Offset(0f , size.height) ,
-                        strokeWidth = strokeWidth * 2
-                    )
-                    // Borde derecho
-                    drawLine(
-                        color = if (selectedScreen == 1) red else Color.Transparent ,
-                        start = Offset(size.width - strokeWidth / 2 , 0f) ,
-                        end = Offset(size.width - strokeWidth / 2 , size.height) ,
-                        strokeWidth = strokeWidth
-                    )
-                    // Borde inferior
-                    drawLine(
-                        color = if (selectedScreen == 1) red else Color.Transparent ,
-                        start = Offset(0f , size.height - strokeWidth / 2) ,
-                        end = Offset(size.width , size.height - strokeWidth / 2) ,
-                        strokeWidth = strokeWidth
-                    )
-                    // Borde superior
-                    drawLine(
-                        color = if (selectedScreen != 1) red else Color.Transparent ,
-                        start = Offset(0f , strokeWidth / 2) ,
-                        end = Offset(size.width , strokeWidth / 2) ,
-                        strokeWidth = strokeWidth
-                    )
-                }
-                .clickable {
-                    onScreenChange(1)
-                }
-                .padding(7.dp)
-        ) {
-            Text(
-                text = "Alumno" ,
-                fontSize = MaterialTheme.typography.subtitle1.fontSize ,
-                color = if (selectedScreen == 1) black else Color.White
-            )
-        }
-        //profesor
-        Box(
-            contentAlignment = Alignment.Center ,
-            modifier = Modifier
-                .weight(1f)
-                .background(color = if (selectedScreen == 2) orange else blue)
-                .drawBehind {
-                    val strokeWidth = 4.dp.toPx()
-
-                    // Borde izquierdo
-                    drawLine(
-                        color = if (selectedScreen == 2) red else Color.Transparent ,
-                        start = Offset(0f , 0f) ,
-                        end = Offset(0f , size.height) ,
-                        strokeWidth = strokeWidth
-                    )
-                    // Borde derecho
-                    drawLine(
-                        color = if (selectedScreen == 2) red else Color.Transparent ,
-                        start = Offset(size.width - strokeWidth / 2 , 0f) ,
-                        end = Offset(size.width - strokeWidth / 2 , size.height) ,
-                        strokeWidth = strokeWidth
-                    )
-                    // Borde inferior
-                    drawLine(
-                        color = if (selectedScreen == 2) red else Color.Transparent ,
-                        start = Offset(0f , size.height - strokeWidth / 2) ,
-                        end = Offset(size.width , size.height - strokeWidth / 2) ,
-                        strokeWidth = strokeWidth
-                    )
-                    // Borde superior
-                    drawLine(
-                        color = if (selectedScreen != 2) red else Color.Transparent ,
-                        start = Offset(0f , strokeWidth / 2) ,
-                        end = Offset(size.width , strokeWidth / 2) ,
-                        strokeWidth = strokeWidth
-                    )
-                }
-                .clickable {
-                    onScreenChange(2)
-                }
-                .padding(7.dp)
-        ) {
-            Text(
-                text = "Profesor" ,
-                fontSize = MaterialTheme.typography.subtitle1.fontSize ,
-                color = if (selectedScreen == 2) black else Color.White
-            )
-        }
-        //materia
-        Box(
-            contentAlignment = Alignment.Center ,
-            modifier = Modifier
-                .weight(1f)
-                .background(color = if (selectedScreen == 3) orange else blue)
-                .drawBehind {
-                    val strokeWidth = 4.dp.toPx()
-
-                    // Borde izquierdo
-                    drawLine(
-                        color = if (selectedScreen == 3) red else Color.Transparent ,
-                        start = Offset(0f , 0f) ,
-                        end = Offset(0f , size.height) ,
-                        strokeWidth = strokeWidth
-                    )
-                    // Borde derecho
-                    drawLine(
-                        color = if (selectedScreen == 3) red else Color.Transparent ,
-                        start = Offset(size.width - strokeWidth / 2 , 0f) ,
-                        end = Offset(size.width - strokeWidth / 2 , size.height) ,
-                        strokeWidth = strokeWidth
-                    )
-                    // Borde inferior
-                    drawLine(
-                        color = if (selectedScreen == 3) red else Color.Transparent ,
-                        start = Offset(0f , size.height - strokeWidth / 2) ,
-                        end = Offset(size.width , size.height - strokeWidth / 2) ,
-                        strokeWidth = strokeWidth
-                    )
-                    // Borde superior
-                    drawLine(
-                        color = if (selectedScreen != 3) red else Color.Transparent ,
-                        start = Offset(0f , strokeWidth / 2) ,
-                        end = Offset(size.width , strokeWidth / 2) ,
-                        strokeWidth = strokeWidth
-                    )
-                }
-                .clickable {
-                    onScreenChange(3)
-                }
-                .padding(7.dp)
-        ) {
-            Text(
-                text = "Materia",
-                fontSize = MaterialTheme.typography.subtitle1.fontSize,
-                color = if (selectedScreen == 3) black else Color.White
-            )
-        }
-        //nota
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .weight(1f)
-                .background(color = if (selectedScreen == 4) orange else blue)
-                .drawBehind {
-                    val strokeWidth = 4.dp.toPx()
-
-                    // Borde izquierdo
-                    drawLine(
-                        color = if (selectedScreen == 4) red else Color.Transparent,
-                        start = Offset(0f, 0f),
-                        end = Offset(0f, size.height),
-                        strokeWidth = strokeWidth
-                    )
-                    // Borde derecho
-                    drawLine(
-                        color = if (selectedScreen == 4) red else Color.Transparent,
-                        start = Offset(size.width - strokeWidth / 2, 0f),
-                        end = Offset(size.width - strokeWidth / 2, size.height),
-                        strokeWidth = strokeWidth
-                    )
-                    // Borde inferior
-                    drawLine(
-                        color = if (selectedScreen == 4) red else Color.Transparent,
-                        start = Offset(0f, size.height - strokeWidth / 2),
-                        end = Offset(size.width, size.height - strokeWidth / 2),
-                        strokeWidth = strokeWidth
-                    )
-                    // Borde superior
-                    drawLine(
-                        color = if (selectedScreen != 4) red else Color.Transparent,
-                        start = Offset(0f, strokeWidth / 2),
-                        end = Offset(size.width, strokeWidth / 2),
-                        strokeWidth = strokeWidth
-                    )
-                }
-                .clickable {
-                    onScreenChange(4)
-                }
-                .padding(7.dp)
-        ) {
-            Text(
-                text = "Nota",
-                fontSize = MaterialTheme.typography.subtitle1.fontSize,
-                color = if (selectedScreen == 4) black else Color.White
-            )
-        }
-        //Lista de alumno
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .weight(1f)
-                .background(color = if (selectedScreen == 5) orange else blue)
-                .drawBehind {
-                    val strokeWidth = 4.dp.toPx()
-                    drawLine(
-                        color = if (selectedScreen == 5) red else Color.Transparent,
-                        start = Offset(0f, 0f),
-                        end = Offset(0f, size.height),
-                        strokeWidth = strokeWidth
-                    )
-                    drawLine(
-                        color = if (selectedScreen == 5) red else Color.Transparent,
-                        start = Offset(size.width - strokeWidth / 2, 0f),
-                        end = Offset(size.width - strokeWidth / 2, size.height),
-                        strokeWidth = strokeWidth
-                    )
-                    drawLine(
-                        color = if (selectedScreen == 5) red else Color.Transparent,
-                        start = Offset(0f, size.height - strokeWidth / 2),
-                        end = Offset(size.width, size.height - strokeWidth / 2),
-                        strokeWidth = strokeWidth
-                    )
-                    drawLine(
-                        color = if (selectedScreen != 5) red else Color.Transparent,
-                        start = Offset(0f, strokeWidth / 2),
-                        end = Offset(size.width, strokeWidth / 2),
-                        strokeWidth = strokeWidth
-                    )
-                }
-                .clickable {
-                    onScreenChange(5)
-                }
-                .padding(7.dp)
-        ) {
-            Text(
-                text = "Lista de alumno",
-                fontSize = MaterialTheme.typography.subtitle1.fontSize,
-                color = if (selectedScreen == 5) black else Color.White
-            )
-        }
-
-        //Lista de profesores
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .weight(1f)
-                .background(color = if (selectedScreen == 6) orange else blue)
-                .drawBehind {
-                    val strokeWidth = 4.dp.toPx()
-                    drawLine(
-                        color = if (selectedScreen == 6) red else Color.Transparent,
-                        start = Offset(0f, 0f),
-                        end = Offset(0f, size.height),
-                        strokeWidth = strokeWidth
-                    )
-                    drawLine(
-                        color = if (selectedScreen == 6) red else Color.Transparent,
-                        start = Offset(size.width - strokeWidth / 2, 0f),
-                        end = Offset(size.width - strokeWidth / 2, size.height),
-                        strokeWidth = strokeWidth
-                    )
-                    drawLine(
-                        color = if (selectedScreen == 6) red else Color.Transparent,
-                        start = Offset(0f, size.height - strokeWidth / 2),
-                        end = Offset(size.width, size.height - strokeWidth / 2),
-                        strokeWidth = strokeWidth
-                    )
-                    drawLine(
-                        color = if (selectedScreen != 6) red else Color.Transparent,
-                        start = Offset(0f, strokeWidth / 2),
-                        end = Offset(size.width, strokeWidth / 2),
-                        strokeWidth = strokeWidth
-                    )
-                }
-                .clickable {
-                    onScreenChange(6)
-                }
-                .padding(7.dp)
-        ) {
-            Text(
-                text = "Lista de profesores",
-                fontSize = MaterialTheme.typography.subtitle1.fontSize,
-                color = if (selectedScreen == 6) black else Color.White
-            )
-        }
-        //búsqueda
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .weight(1f)
-                .background(color = if (selectedScreen == 7) orange else blue)
-                .drawBehind {
-                    val strokeWidth = 4.dp.toPx()
-
-                    // Borde superior
-                    drawLine(
-                        color = if (selectedScreen != 7) red else Color.Transparent,
-                        start = Offset(0f, strokeWidth / 2),
-                        end = Offset(size.width, strokeWidth / 2),
-                        strokeWidth = strokeWidth
-                    )
-
-                    // Borde derecho
-                    drawLine(
-                        color = if (selectedScreen != 7) red else Color.Transparent,
-                        start = Offset(size.width - strokeWidth / 2, 0f),
-                        end = Offset(size.width - strokeWidth / 2, size.height),
-                        strokeWidth = strokeWidth * 2
-                    )
-                    // Borde izquierdo
-                    drawLine(
-                        color = if (selectedScreen == 7) red else Color.Transparent,
-                        start = Offset(0f, 0f),
-                        end = Offset(0f, size.height),
-                        strokeWidth = strokeWidth
-                    )
-                    // Borde inferior
-                    drawLine(
-                        color = if (selectedScreen == 7) red else Color.Transparent,
-                        start = Offset(0f, size.height - strokeWidth / 2),
-                        end = Offset(size.width, size.height - strokeWidth / 2),
-                        strokeWidth = strokeWidth
-                    )
-                }
-                .clickable {
-                    onScreenChange(7)
-                }
-                .padding(7.dp)
-        ) {
-            Text(
-                text = "Búsqueda de datos" ,
-                fontSize = MaterialTheme.typography.subtitle1.fontSize ,
-                color = if (selectedScreen == 7) black else Color.White
-            )
-        }
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .background(color = if (isSelected) orange else blue)
+            .drawBehind {
+                val strokeWidth = 5.dp.toPx()
+                // Borde izquierdo
+                drawLine(
+                    color = if (isSelected) red else Color.Transparent,
+                    start = Offset(0f, 0f),
+                    end = Offset(0f, size.height),
+                    strokeWidth = strokeWidth
+                )
+                // Borde derecho
+                drawLine(
+                    color = if (isSelected) red else Color.Transparent,
+                    start = Offset(size.width - strokeWidth / 2, 0f),
+                    end = Offset(size.width - strokeWidth / 2, size.height),
+                    strokeWidth = strokeWidth
+                )
+                // Borde inferior
+                drawLine(
+                    color = if (isSelected) red else Color.Transparent,
+                    start = Offset(0f, size.height - strokeWidth / 2),
+                    end = Offset(size.width, size.height - strokeWidth / 2),
+                    strokeWidth = strokeWidth
+                )
+                // Borde superior
+                drawLine(
+                    color = if (!isSelected) red else Color.Transparent,
+                    start = Offset(0f, strokeWidth / 2),
+                    end = Offset(size.width, strokeWidth / 2),
+                    strokeWidth = strokeWidth
+                )
+            }
+            .clickable {
+                onClick()
+            }
+            .padding(7.dp)
+    ) {
+        Text(
+            text = title,
+            fontSize = MaterialTheme.typography.subtitle1.fontSize,
+            color = if (isSelected) black else Color.White
+        )
     }
 }
 
 @Composable
+fun menuBar(
+    onScreenChange: (Int) -> Unit,
+    selectedScreen: Int
+) {
+    Row {
+        //Alumno
+        menuItem(
+            isSelected = selectedScreen == 1,
+            title = "Alumno",
+            modifier = Modifier.weight(1f)
+        ) {
+            onScreenChange(1)
+        }
+        //Profesor
+        menuItem(
+            isSelected = selectedScreen == 2,
+            title = "Profesor",
+            modifier = Modifier.weight(1f)
+        ) {
+            onScreenChange(2)
+        }
+        //materia
+        menuItem(
+            isSelected = selectedScreen == 3,
+            title = "Materia",
+            modifier = Modifier.weight(1f)
+        ) {
+            onScreenChange(3)
+        }
+        //nota
+        menuItem(
+            isSelected = selectedScreen == 4,
+            title = "Nota",
+            modifier = Modifier.weight(1f)
+        ) {
+            onScreenChange(4)
+        }
+        //Lista de alumno
+        menuItem(
+            isSelected = selectedScreen == 5,
+            title = "Lista de alumno",
+            modifier = Modifier.weight(1f)
+        ) {
+            onScreenChange(5)
+        }
+        //Lista de profesores
+        menuItem(
+            isSelected = selectedScreen == 6,
+            title = "Lista de profesores",
+            modifier = Modifier.weight(1f)
+        ) {
+            onScreenChange(6)
+        }
+        //búsqueda
+        menuItem(
+            isSelected = selectedScreen == 7,
+            title = "Búsqueda",
+            modifier = Modifier.weight(1f)
+        ) {
+            onScreenChange(7)
+        }
+    }
+}
+
+/**
+ * La function textBar permite la entrada de texto permitiendo un aspecto consistent en las entradas de texto
+ * y la function textBarForSearch es igual excepto que usa un modifier para las modificaciones
+ */
+@Composable
 fun textBar(
-    value: String ,
-    onValueChange: (String) -> Unit ,
-    label: String ,
-    leadingIcon: (@Composable (() -> Unit))? = null ,
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
     trailingIcon: (@Composable (() -> Unit))? = null
 ) {
     OutlinedTextField(
-        value = value ,
-        onValueChange = onValueChange ,
+        value = value,
+        onValueChange = onValueChange,
         label = {
             Text(
-                text = label ,
+                text = label,
                 fontSize = MaterialTheme.typography.subtitle2.fontSize
             )
-        } ,
+        },
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = blue ,
-            unfocusedBorderColor = blue ,
-            focusedLabelColor = Color.White ,
-            unfocusedLabelColor = Color.White ,
+            focusedBorderColor = blue,
+            unfocusedBorderColor = blue,
+            focusedLabelColor = Color.White,
+            unfocusedLabelColor = Color.White,
             cursorColor = Color.White
-        ) ,
+        ),
         textStyle = TextStyle(
-            fontSize = 15.sp ,
+            fontSize = 15.sp,
             color = Color.White
-        ) ,
-        singleLine = true ,
+        ),
+        singleLine = true,
         modifier = Modifier
             .fillMaxWidth(0.5f)
-            .padding(4.dp) ,
-        maxLines = 1 ,
-        leadingIcon = leadingIcon ,
+            .padding(4.dp),
+        maxLines = 1,
         trailingIcon = trailingIcon
     )
 }
@@ -423,7 +207,7 @@ fun textBarForSearch(
         onValueChange = onValueChange,
         label = {
             Text(
-                text = label ,
+                text = label,
                 fontSize = MaterialTheme.typography.subtitle2.fontSize
             )
         },
@@ -444,56 +228,65 @@ fun textBarForSearch(
     )
 }
 
+/**
+ * Es el botón para us general dentro de la aplicación
+ */
 @Composable
 fun button(
-    label: String ,
+    label: String,
     onClick: () -> Unit
 ) {
     OutlinedButton(
         onClick = { onClick() },
         border = BorderStroke(
-            width = 2.dp ,
+            width = 2.dp,
             color = blue
-        ) ,
+        ),
         colors = ButtonDefaults.outlinedButtonColors(
-            backgroundColor = Color.Transparent ,
-        ) ,
+            backgroundColor = Color.Transparent,
+        ),
         content = {
             Text(
-                text = label ,
-                color = Color.White ,
+                text = label,
+                color = Color.White,
                 fontSize = MaterialTheme.typography.h6.fontSize
             )
         }
     )
 }
 
+/**
+ * Es la barra emergente con mensajes de error y de cumplimiento?, no sé escribir
+ */
 @Composable
 fun customSnackbar(snackbarData: SnackbarData) {
     Snackbar(
-        snackbarData = snackbarData ,
-        contentColor = Color.White ,
-        shape = RoundedCornerShape(10.dp) ,
-        backgroundColor = blue ,
-        elevation = 15.dp ,
+        snackbarData = snackbarData,
+        contentColor = Color.White,
+        shape = RoundedCornerShape(10.dp),
+        backgroundColor = blue,
+        elevation = 15.dp,
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentWidth(Alignment.CenterHorizontally)
-            .padding(horizontal = 16.dp , vertical = 8.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
             .fillMaxWidth(0.5f)
     )
 }
 
+/**
+ * Box con text bar para encontrar elementos de una lista
+ */
 @Composable
 fun <T> selectorBox(
-    label: String,
-    expanded: Boolean,
-    onExpandedChange: (Boolean) -> Unit,
-    inputText: String,
-    onInputChange: (String) -> Unit,
-    options: List<T>,
-    displayText: (T) -> String,
-    onSelect: (T) -> Unit
+    label: String, // label del text bar
+    expanded: Boolean, // si se expende o no en dropMenu
+    onExpandedChange: (Boolean) -> Unit,// el cambio de estado(cambia si esta expandido)
+    inputText: String,// texto que se ingresa
+    onInputChange: (String) -> Unit,// su cambio cuando se selection un elemento
+    options: List<T>,// lista de objetos del dropMenu (el tipo <T> permite que se especifique su tipo al usarlo)
+    displayText: (T) -> String,// como es el texto donde se muestran las options
+    onSelect: (T) -> Unit // el que se selecciona
 ) {
     Box {
         textBar(
@@ -505,15 +298,22 @@ fun <T> selectorBox(
                     onClick = { onExpandedChange(!expanded) },
                     modifier = Modifier.size(35.dp)
                 ) {
-                    Icon(
-                        painter = if (expanded)
-                            painterResource("close_24dp.svg")
-                        else
-                            painterResource("search_24dp.svg"),
-                        contentDescription = "toggle",
-                        tint = orange,
-                        modifier = Modifier.size(35.dp)
-                    )
+                    AnimatedVisibility(expanded){
+                        Icon(
+                            painter = painterResource("close_24dp.svg"),
+                            contentDescription = "close",
+                            tint = blue,
+                            modifier = Modifier.size(35.dp)
+                        )
+                    }
+                    AnimatedVisibility(!expanded){
+                        Icon(
+                            painter = painterResource("search_24dp.svg"),
+                            contentDescription = "close",
+                            tint = blue,
+                            modifier = Modifier.size(35.dp)
+                        )
+                    }
                 }
             }
         )
@@ -542,8 +342,11 @@ fun <T> selectorBox(
     }
 }
 
+/**
+ * Box que muestra los datos de una lista
+ */
 @Composable
-fun <T> boxOfData(data: List<T>,color: Color) {
+fun <T> boxOfData(data: List<T>, color: Color) {
     Box(
         modifier = Modifier
             .border(
@@ -564,6 +367,9 @@ fun <T> boxOfData(data: List<T>,color: Color) {
     }
 }
 
+/**
+ * Tiene dos barras de búsqueda con sus respectivos botones uno para dni y otro para nombre
+ */
 @Composable
 fun search(
     onSearchByName: (String) -> Unit,
@@ -575,9 +381,9 @@ fun search(
 
     Row(
         modifier = Modifier
-            .padding(vertical = 30.dp , horizontal = 20.dp)
-            .fillMaxWidth() ,
-        verticalAlignment = Alignment.CenterVertically ,
+            .padding(vertical = 30.dp, horizontal = 20.dp)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
         textBarForSearch(
