@@ -7,15 +7,14 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import colors.blue
 import colors.orange
 import colors.red
-import sql.data.OutPutData
 import sql.SqlViewModel
+import sql.data.OutPutData
 import utilitis.boxOfData
 import utilitis.button
 import utilitis.search

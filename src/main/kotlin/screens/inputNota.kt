@@ -4,15 +4,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.SnackbarHostState
-import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.BlendMode.Companion.Color
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import sql.data.NotaData
 import sql.SqlViewModel
+import sql.data.NotaData
 import utilitis.button
 import utilitis.selectorBox
 import utilitis.textBar
@@ -44,7 +41,7 @@ fun notaInputInsert(sql: SqlViewModel) {
         //se filtran las listas
         sql.filtrarProfesores("")
         sql.filtrarAlumnos("")
-        sql.filtrarMaterias("","")
+        sql.filtrarMaterias("", "")
     }
 
     LaunchedEffect(dniProfesor) {

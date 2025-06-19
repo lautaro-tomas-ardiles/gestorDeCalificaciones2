@@ -1,10 +1,6 @@
 package sql
 
-import sql.data.AlumnoData
-import sql.data.MateriaData
-import sql.data.NotaData
-import sql.data.OutPutData
-import sql.data.ProfesorData
+import sql.data.*
 
 class SQLiteCRUD {
 
@@ -15,8 +11,8 @@ class SQLiteCRUD {
         try {
             SQLiteConnection.connect()?.use { conn ->
                 conn.prepareStatement(sql).use { stmt ->
-                    stmt.setString(1 , alumnoData.dni)
-                    stmt.setString(2 , alumnoData.nombre)
+                    stmt.setString(1, alumnoData.dni)
+                    stmt.setString(2, alumnoData.nombre)
                     stmt.executeUpdate()
                 }
             }
@@ -35,8 +31,8 @@ class SQLiteCRUD {
         try {
             SQLiteConnection.connect()?.use { conn ->
                 conn.prepareStatement(sql).use { stmt ->
-                    stmt.setString(1 , profesorData.nombre)
-                    stmt.setString(2 , profesorData.dni)
+                    stmt.setString(1, profesorData.nombre)
+                    stmt.setString(2, profesorData.dni)
                     stmt.executeUpdate()
                 }
             }
@@ -55,8 +51,8 @@ class SQLiteCRUD {
         try {
             SQLiteConnection.connect()?.use { conn ->
                 conn.prepareStatement(sql).use { stmt ->
-                    stmt.setString(1 , materiaData.dniDelProfesor)
-                    stmt.setString(2 , materiaData.nombre)
+                    stmt.setString(1, materiaData.dniDelProfesor)
+                    stmt.setString(2, materiaData.nombre)
                     stmt.executeUpdate()
                 }
             }
@@ -75,10 +71,10 @@ class SQLiteCRUD {
         try {
             SQLiteConnection.connect()?.use { conn ->
                 conn.prepareStatement(sql).use { stmt ->
-                    stmt.setString(1 , notaData.dniDelProfesor)
-                    stmt.setString(2 , notaData.dniDelAlumno)
-                    stmt.setInt(3 , notaData.id)
-                    stmt.setDouble(4 , notaData.nota ?: 0.0)
+                    stmt.setString(1, notaData.dniDelProfesor)
+                    stmt.setString(2, notaData.dniDelAlumno)
+                    stmt.setInt(3, notaData.id)
+                    stmt.setDouble(4, notaData.nota ?: 0.0)
                     stmt.executeUpdate()
                 }
             }
@@ -115,7 +111,7 @@ class SQLiteCRUD {
 
         SQLiteConnection.connect()?.use { conn ->
             conn.prepareStatement(sql).use { stmt ->
-                stmt.setString(1 , "%$nombreCompletoA%")
+                stmt.setString(1, "%$nombreCompletoA%")
                 val resultSet = stmt.executeQuery()
                 while (resultSet.next()) {
                     data.add(
@@ -156,7 +152,7 @@ class SQLiteCRUD {
 
         SQLiteConnection.connect()?.use { conn ->
             conn.prepareStatement(sql).use { stmt ->
-                stmt.setString(1 , "%$dniA%")
+                stmt.setString(1, "%$dniA%")
                 val resultSet = stmt.executeQuery()
                 while (resultSet.next()) {
                     data.add(
@@ -306,6 +302,7 @@ class SQLiteCRUD {
             }
         }
     }
+
     //por nombre
     fun listOfAlumnosByNombre(name: String): List<AlumnoData> {
         val data = mutableListOf<AlumnoData>()
@@ -410,6 +407,7 @@ class SQLiteCRUD {
             }
         }
     }
+
     //por nombre
     fun listOfProfesoresByNombre(name: String): List<ProfesorData> {
         val data = mutableListOf<ProfesorData>()

@@ -18,27 +18,27 @@ fun profesorInputInsert(sql: SqlViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(vertical = 35.dp) ,
-        verticalArrangement = Arrangement.Center ,
+            .padding(vertical = 35.dp),
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         textBar(
-            value = nombreDelProfesor ,
-            onValueChange = { nombreDelProfesor = it } ,
+            value = nombreDelProfesor,
+            onValueChange = { nombreDelProfesor = it },
             label = "Nombre del profesor..."
         )
         Spacer(modifier = Modifier.padding(31.dp))
 
         textBar(
-            value = dniDelProfesor ,
-            onValueChange = { dniDelProfesor = it } ,
+            value = dniDelProfesor,
+            onValueChange = { dniDelProfesor = it },
             label = "D.N.I del profesor"
         )
         Spacer(modifier = Modifier.padding(31.dp))
 
         button(label = "agregar") {
             sql.agregarProfesor(
-                nombreDelProfesor ,
+                nombreDelProfesor,
                 dniDelProfesor
             )
             nombreDelProfesor = ""

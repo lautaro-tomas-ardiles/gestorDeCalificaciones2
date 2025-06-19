@@ -7,8 +7,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import sql.SqlViewModel
-import sql.data.ProfesorData
-import utilitis.*
+import utilitis.button
+import utilitis.selectorBox
+import utilitis.textBar
 
 @Composable
 fun materiaInputInsert(sql: SqlViewModel) {

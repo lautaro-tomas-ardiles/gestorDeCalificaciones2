@@ -18,28 +18,28 @@ fun alumnoInputText(sql: SqlViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(vertical = 35.dp) ,
-        verticalArrangement = Arrangement.Center ,
+            .padding(vertical = 35.dp),
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         textBar(
-            value = nombreDelAlumno ,
-            onValueChange = { nombreDelAlumno = it } ,
+            value = nombreDelAlumno,
+            onValueChange = { nombreDelAlumno = it },
             label = "Nombre del alumno..."
         )
         Spacer(modifier = Modifier.padding(31.dp))
 
         textBar(
-            value = dniDelAlumno ,
-            onValueChange = { dniDelAlumno = it } ,
+            value = dniDelAlumno,
+            onValueChange = { dniDelAlumno = it },
             label = "D.N.I del alumno..."
         )
         Spacer(modifier = Modifier.padding(31.dp))
 
         button(
-            label = "Añadir" ,
+            label = "Añadir",
             onClick = {
-                sql.agregarAlumno(nombreDelAlumno , dniDelAlumno)
+                sql.agregarAlumno(nombreDelAlumno, dniDelAlumno)
                 if (sql.mensaje != null) {
                     return@button
                 }

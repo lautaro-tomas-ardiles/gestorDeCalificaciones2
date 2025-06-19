@@ -9,11 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import sql.data.AlumnoData
-import sql.data.MateriaData
-import sql.data.NotaData
-import sql.data.OutPutData
-import sql.data.ProfesorData
+import sql.data.*
 
 class SqlViewModel : ViewModel() {
     private val crud = SQLiteCRUD()
@@ -31,16 +27,16 @@ class SqlViewModel : ViewModel() {
         private set
 
     private val _alumnos = mutableStateOf<List<AlumnoData>>(emptyList())
-        val alumnos = _alumnos
+    val alumnos = _alumnos
 
     private val _profesores = mutableStateOf<List<ProfesorData>>(emptyList())
-        val profesores = _profesores
+    val profesores = _profesores
 
     private val _materias = mutableStateOf<List<MateriaData>>(emptyList())
-        val materias = _materias
+    val materias = _materias
 
     private val _outPut = mutableStateOf<List<OutPutData>>(emptyList())
-        val outPut = _outPut
+    val outPut = _outPut
 
     /**
      * Empty campos: revisa si un número indefinido de variable de tipo
@@ -60,8 +56,8 @@ class SqlViewModel : ViewModel() {
      * @param nombreAlumno nombre del alumno
      * @param dniAlumno dni del alumno
      */
-    fun agregarAlumno(nombreAlumno: String , dniAlumno: String) {
-        if (emptyCampos(nombreAlumno,dniAlumno)) {
+    fun agregarAlumno(nombreAlumno: String, dniAlumno: String) {
+        if (emptyCampos(nombreAlumno, dniAlumno)) {
             mensaje = "Nombre y DNI del alumno no pueden estar vacíos."
             return
         }
@@ -82,7 +78,7 @@ class SqlViewModel : ViewModel() {
      * @param nombreProfesor nombre del profesor
      * @param dniProfesor dni del profesor
      */
-    fun agregarProfesor(nombreProfesor: String , dniProfesor: String) {
+    fun agregarProfesor(nombreProfesor: String, dniProfesor: String) {
         if (nombreProfesor.isBlank() || dniProfesor.isBlank()) {
             mensaje = "Nombre y DNI del profesor no pueden estar vacíos."
             return
