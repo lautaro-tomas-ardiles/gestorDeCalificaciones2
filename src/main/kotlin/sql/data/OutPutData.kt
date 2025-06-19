@@ -5,6 +5,5 @@ data class OutPutData(
     val nota: Double,
     val nombreDelAlumno: String,
     val nombreDeLaMateria: String,
-    val dniDelAlumno: String,
-    val dniDelProfesor: String
+    val notaId: Int
 )

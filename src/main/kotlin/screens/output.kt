@@ -1,12 +1,17 @@
 package screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import colors.blue
 import colors.orange
 import colors.red
 import sql.data.OutPutData
@@ -21,32 +26,72 @@ fun textsOutPut(
     sql: SqlViewModel,
     onRefresh: () -> Unit
 ) {
+    val scroll = rememberScrollState()
     Column(
         modifier = Modifier
             .padding(start = 30.dp)
-            .fillMaxSize()
+            .fillMaxWidth()
+            .verticalScroll(scroll)
     ) {
         //indica como se disponen los datos
         boxOfData(
-            data = listOf("Nombre Del alumno","Nota","Nombre del profesor","Materia"),
+            data = listOf("Nombre Del alumno", "Nota", "Nombre del profesor", "Materia"),
             color = red
         )
         Spacer(modifier = Modifier.padding(20.dp))
+        if (data.isEmpty()) {
+            AnimatedVisibility(
+                true,
+                enter = slideInHorizontally(
+                    initialOffsetX = { -it },
+                    animationSpec = tween(300)
+                )
+            ) {
+                boxOfData(
+                    data = listOf("no hay datos con esos nombres o dni"),
+                    color = orange
+                )
+            }
+        }
 
-        LazyColumn {
-            items(data) {it ->
-                Row {
-                    boxOfData(
-                        listOf(it.nombreDelAlumno, it.nota, it.nombreDelProfesor, it.nombreDeLaMateria),
-                        orange
-                    )
-                    Spacer(modifier = Modifier.padding(5.dp))
-                    button("×") {
-                        sql.eliminarNotaPorDNI(it.dniDelAlumno)
-                        onRefresh()
+        data.forEach { item ->
+            // Estado para controlar visibilidad de animación
+            var visible by remember { mutableStateOf(false) }
+            // Disparar la animación al componer el ítem
+            LaunchedEffect(item.notaId) { visible = true }
+
+            // AnimatedVisibility con transición horizontal suave
+            AnimatedVisibility(
+                visible = visible,
+                enter = slideInHorizontally(
+                    initialOffsetX = { -it }, // Desde la izquierda
+                    animationSpec = tween(durationMillis = 300)
+                ),
+                exit = slideOutHorizontally(
+                    targetOffsetX = { it }, // Hacia la derecha
+                    animationSpec = tween(durationMillis = 300)
+                )
+            ) {
+                Column {
+                    Row {
+                        boxOfData(
+                            listOf(
+                                item.nombreDelAlumno, item.nota,
+                                item.nombreDelProfesor, item.nombreDeLaMateria,
+                                item.notaId
+                            ),
+                            orange
+                        )
+                        Spacer(modifier = Modifier.padding(5.dp))
+                        button("×") {
+                            visible = false
+                            sql.eliminarNotaPorId(item.notaId)
+                            onRefresh()
+                        }
                     }
+                    // Espaciado después de la fila
+                    Spacer(modifier = Modifier.padding(10.dp))
                 }
-                Spacer(modifier = Modifier.padding(20.dp))
             }
         }
     }
@@ -55,20 +100,21 @@ fun textsOutPut(
 @Composable
 fun mainOutput(snackbarHostState: SnackbarHostState) {
     val sql = remember { SqlViewModel() }
-    var estudiantes by remember { mutableStateOf(emptyList<OutPutData>()) }
-
-    fun refreshList(query: String, isDNI: Boolean = true) {
-        estudiantes = if (isDNI) {
-            sql.buscarAlumnoPorDNI(query)
-        }else {
-            sql.buscarAlumnoPorNombre(query)
-        }
+    LaunchedEffect(Unit) {
+        sql.buscarNotaDeAlumnoPorNombre("")
     }
+
+    val estudiantes by sql.outPut  // Observa directamente el estado
 
     var lastQuery by remember { mutableStateOf("") }
 
-    LaunchedEffect(Unit) {
-        estudiantes = sql.buscarAlumnoPorNombre("")
+    fun refreshList(query: String, isDNI: Boolean = true) {
+        lastQuery = query
+        if (isDNI) {
+            sql.buscarNotaDelAlumnoPorDNI(query)
+        } else {
+            sql.buscarNotaDeAlumnoPorNombre(query)
+        }
     }
 
     LaunchedEffect(sql.mensaje) {
@@ -81,12 +127,10 @@ fun mainOutput(snackbarHostState: SnackbarHostState) {
     Column {
         search(
             onSearchByName = { search ->
-                lastQuery = search
-                refreshList(lastQuery, false)
+                refreshList(search, false)
             },
             onSearchByDNI = { search ->
-                lastQuery = search
-                refreshList(lastQuery)
+                refreshList(search)
             }
         )
         textsOutPut(estudiantes, sql) {

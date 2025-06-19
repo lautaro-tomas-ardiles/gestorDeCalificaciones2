@@ -40,6 +40,9 @@ fun alumnoInputText(sql: SqlViewModel) {
             label = "Añadir" ,
             onClick = {
                 sql.agregarAlumno(nombreDelAlumno , dniDelAlumno)
+                if (sql.mensaje != null) {
+                    return@button
+                }
                 nombreDelAlumno = ""
                 dniDelAlumno = ""
             }
@@ -50,7 +53,6 @@ fun alumnoInputText(sql: SqlViewModel) {
 @Composable
 fun mainInputAlumno(snackbarHostState: SnackbarHostState) {
     val sql = remember { SqlViewModel() }
-    //val snackbarHostState = remember { SnackbarHostState() }
 
     // Mostrar mensaje cuando cambie
     LaunchedEffect(sql.mensaje) {

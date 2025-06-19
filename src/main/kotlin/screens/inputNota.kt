@@ -4,9 +4,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.SnackbarHostState
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.BlendMode.Companion.Color
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import sql.data.NotaData
 import sql.SqlViewModel
@@ -24,6 +27,7 @@ fun notaInputInsert(sql: SqlViewModel) {
     var selectedMateria by remember { mutableStateOf("") }
 
     var materiaNombre by remember { mutableStateOf("") }
+    var materiaId by remember { mutableStateOf(-1) }
 
     var dniAlumno by remember { mutableStateOf("") }
     var dniProfesor by remember { mutableStateOf("") }
@@ -32,29 +36,20 @@ fun notaInputInsert(sql: SqlViewModel) {
     var expandedProfesor by remember { mutableStateOf(false) }
     var expandedMateria by remember { mutableStateOf(false) }
 
-    val alumnos = remember { sql.obtenerAlumnos() }
-    val profesores = remember { sql.obtenerProfesores() }
-    val materias = remember { sql.obtenerMaterias() }
-
-    val alumnosFiltrados = alumnos.filter {
-        it.nombre.lowercase().contains(selectedAlumno.lowercase()) ||
-        it.dni.lowercase().contains(selectedAlumno.lowercase())
+    LaunchedEffect(Unit) {
+        // se pide a db las listas correspondientes
+        sql.cargarProfesores()
+        sql.cargarAlumnos()
+        sql.cargarMaterias()
+        //se filtran las listas
+        sql.filtrarProfesores("")
+        sql.filtrarAlumnos("")
+        sql.filtrarMaterias("","")
     }
 
-    val profesoresFiltrados = profesores.filter {
-        it.nombre.lowercase().contains(selectedProfesor.lowercase()) ||
-        it.dni.lowercase().contains(selectedProfesor.lowercase())
+    LaunchedEffect(dniProfesor) {
+        sql.filtrarMaterias(dniProfesor, materiaNombre)
     }
-
-    val materiasFiltradas = if (dniProfesor.isNotEmpty()) {
-        materias.filter {
-            it.nombre.lowercase().contains(selectedMateria.lowercase()) &&
-                    it.dniDelProfesor == dniProfesor
-        }
-    } else {
-        emptyList()
-    }
-
 
     Column(
         modifier = Modifier
@@ -77,8 +72,11 @@ fun notaInputInsert(sql: SqlViewModel) {
             expanded = expandedAlumno,
             onExpandedChange = { expandedAlumno = it },
             inputText = selectedAlumno,
-            onInputChange = { selectedAlumno = it },
-            options = alumnosFiltrados,
+            onInputChange = {
+                selectedAlumno = it
+                sql.filtrarAlumnos(it)
+            },
+            options = sql.alumnos.value,
             displayText = { "nombre: ${it.nombre} | dni: ${it.dni}" },
             onSelect = {
                 dniAlumno = it.dni
@@ -86,7 +84,6 @@ fun notaInputInsert(sql: SqlViewModel) {
                 expandedAlumno = false
             }
         )
-
         Spacer(modifier = Modifier.padding(31.dp))
 
         // PROFESOR
@@ -95,8 +92,11 @@ fun notaInputInsert(sql: SqlViewModel) {
             expanded = expandedProfesor,
             onExpandedChange = { expandedProfesor = it },
             inputText = selectedProfesor,
-            onInputChange = { selectedProfesor = it },
-            options = profesoresFiltrados,
+            onInputChange = {
+                selectedProfesor = it
+                sql.filtrarProfesores(it)
+            },
+            options = sql.profesores.value,
             displayText = { "nombre: ${it.nombre} | dni: ${it.dni}" },
             onSelect = {
                 dniProfesor = it.dni
@@ -113,12 +113,16 @@ fun notaInputInsert(sql: SqlViewModel) {
             expanded = expandedMateria,
             onExpandedChange = { expandedMateria = it },
             inputText = selectedMateria,
-            onInputChange = { selectedMateria = it },
-            options = materiasFiltradas,
+            onInputChange = {
+                selectedMateria = it
+                sql.filtrarMaterias(dniProfesor, materiaNombre)
+            },
+            options = sql.materias.value,
             displayText = { "nombre: ${it.nombre} | dni del profesor: ${it.dniDelProfesor}" },
             onSelect = {
                 selectedMateria = "nombre: ${it.nombre} | dni del profesor: ${it.dniDelProfesor}"
                 materiaNombre = it.nombre
+                materiaId = it.materiaId
                 expandedMateria = false
             }
         )
@@ -129,12 +133,14 @@ fun notaInputInsert(sql: SqlViewModel) {
             sql.agregarNota(
                 NotaData(
                     dniProfesor,
-                    nota.toDouble(),
+                    nota.toDoubleOrNull(),
                     dniAlumno,
-                    materiaNombre
+                    id = materiaId
                 )
             )
-
+            if (sql.mensaje != null) {
+                return@button
+            }
             // Reset
             nota = ""
             selectedAlumno = ""
@@ -143,6 +149,7 @@ fun notaInputInsert(sql: SqlViewModel) {
             materiaNombre = ""
             dniAlumno = ""
             dniProfesor = ""
+            materiaId = -1
         }
     }
 }

@@ -24,15 +24,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import colors.orange
 import colors.red
-import sql.data.AlumnoData
 import sql.SqlViewModel
+import sql.data.MateriaData
 import utilitis.boxOfData
 import utilitis.button
 import utilitis.search
 
 @Composable
-fun ListOfAlumnosOutPut(
-    data: List<AlumnoData>,
+fun ListOfMateriasOutPut(
+    data: List<MateriaData>,
     sql: SqlViewModel,
     onRefresh: () -> Unit
 ) {
@@ -54,7 +54,7 @@ fun ListOfAlumnosOutPut(
             )
         ) {
             boxOfData(
-                data = listOf("Nombre Del alumno", "DNI del alumno"),
+                data = listOf("Nombre De la materia", "DNI del profesor"),
                 color = red
             )
         }
@@ -80,7 +80,7 @@ fun ListOfAlumnosOutPut(
             // Estado para controlar visibilidad de animación
             var visible by remember { mutableStateOf(false) }
             // Disparar la animación al componer el ítem
-            LaunchedEffect(item.dni) { visible = true }
+            LaunchedEffect(item.materiaId) { visible = true }
 
             // AnimatedVisibility con transición horizontal suave
             AnimatedVisibility(
@@ -97,13 +97,13 @@ fun ListOfAlumnosOutPut(
                 Column {
                     Row {
                         boxOfData(
-                            listOf(item.nombre, item.dni),
+                            listOf(item.nombre, item.dniDelProfesor),
                             orange
                         )
                         Spacer(modifier = Modifier.padding(5.dp))
                         button("×") {
                             visible = false
-                            sql.eliminarAlumnoPorDNI(item.dni)
+                            sql.eliminarMateriaPorId(item.materiaId)
                             onRefresh()
                         }
                     }
@@ -115,14 +115,13 @@ fun ListOfAlumnosOutPut(
     }
 }
 
-
 @Composable
-fun mainListOfAlumnos(snackbarHostState: SnackbarHostState) {
+fun mainListOfMaterias(snackbarHostState: SnackbarHostState) {
     val sql = remember { SqlViewModel() }
     LaunchedEffect(Unit) {
-        sql.buscarAlumnosPorDNI("")
+        sql.buscarMateriasPorDNI("")
     }
-    var estudiantes by sql.alumnos
+    var materias by sql.materias
 
     LaunchedEffect(sql.mensaje) {
         sql.mensaje?.let {
@@ -136,9 +135,9 @@ fun mainListOfAlumnos(snackbarHostState: SnackbarHostState) {
     fun refreshList(query: String, isDNI: Boolean = true) {
         lastQuery = query
         if (isDNI) {
-            sql.buscarAlumnosPorDNI(query)
+            sql.buscarMateriasPorDNI(query)
         } else {
-            sql.buscarAlumnosPorNombre(query)
+            sql.buscarMateriasPorNombre(query)
         }
     }
 
@@ -149,10 +148,12 @@ fun mainListOfAlumnos(snackbarHostState: SnackbarHostState) {
             },
             onSearchByDNI = { search ->
                 refreshList(search)
-            }
+            },
+            isAlumno = false,
+            isMateria = true
         )
-        ListOfAlumnosOutPut(
-            data = estudiantes,
+        ListOfMateriasOutPut(
+            data = materias,
             sql = sql,
             onRefresh = { refreshList(lastQuery) }
         )

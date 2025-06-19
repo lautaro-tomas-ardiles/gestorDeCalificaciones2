@@ -7,22 +7,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import sql.SqlViewModel
+import sql.data.ProfesorData
 import utilitis.*
 
 @Composable
 fun materiaInputInsert(sql: SqlViewModel) {
 
     var nombreDeLaMateria by remember { mutableStateOf("") }
-    var profesorNombre by remember { mutableStateOf("") }
+    var selectedProfesor by remember { mutableStateOf("") }
     var dniProfesor by remember { mutableStateOf("") }
-
     var expandedProfesor by remember { mutableStateOf(false) }
 
-    val profesores = remember { sql.obtenerProfesores() }
-
-    val profesoresFiltrados = profesores.filter {
-        it.nombre.lowercase().contains(profesorNombre.lowercase()) ||
-        it.dni.lowercase().contains(profesorNombre.lowercase())
+    LaunchedEffect(Unit) {
+        sql.cargarProfesores()
+        sql.filtrarProfesores("")
     }
 
     Column(
@@ -44,13 +42,16 @@ fun materiaInputInsert(sql: SqlViewModel) {
             label = "Seleccione profesor...",
             expanded = expandedProfesor,
             onExpandedChange = { expandedProfesor = it },
-            inputText = profesorNombre,
-            onInputChange = { profesorNombre = it },
-            options = profesoresFiltrados,
+            inputText = selectedProfesor,
+            onInputChange = {
+                selectedProfesor = it
+                sql.filtrarProfesores(it)
+            },
+            options = sql.profesores.value,
             displayText = { "nombre: ${it.nombre} | dni: ${it.dni}" },
             onSelect = {
                 dniProfesor = it.dni
-                profesorNombre = "nombre: ${it.nombre} | dni: ${it.dni}"
+                selectedProfesor = "nombre: ${it.nombre} | dni: ${it.dni}"
                 expandedProfesor = false
             }
         )
@@ -58,9 +59,12 @@ fun materiaInputInsert(sql: SqlViewModel) {
 
         button(label = "Añadir") {
             sql.agregarMateria(dniProfesor, nombreDeLaMateria)
+            if (sql.mensaje != null) {
+                return@button
+            }
             nombreDeLaMateria = ""
             dniProfesor = ""
-            profesorNombre = ""
+            selectedProfesor = ""
         }
     }
 }
@@ -68,7 +72,6 @@ fun materiaInputInsert(sql: SqlViewModel) {
 @Composable
 fun mainInputMateria(snackbarHostState: SnackbarHostState) {
     val sql = remember { SqlViewModel() }
-    //val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(sql.mensaje) {
         sql.mensaje?.let {

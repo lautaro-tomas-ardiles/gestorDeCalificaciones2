@@ -22,9 +22,7 @@ object SQLiteConnection {
 
     fun connect(): Connection? {
         return try {
-            DriverManager.getConnection(url).also {
-                println("Conexión a SQLite establecida.")
-            }
+            DriverManager.getConnection(url)
         } catch (e: SQLException) {
             println("Error al conectar a la base de datos: ${e.message}")
             null
@@ -45,17 +43,20 @@ object SQLiteConnection {
                     nombreCompletoP TEXT NOT NULL
                 );
                 CREATE TABLE IF NOT EXISTS materias (
+                    materiaId INTEGER PRIMARY KEY,
                     dniP TEXT NOT NULL,
                     materia TEXT NOT NULL,
                     FOREIGN KEY(dniP) REFERENCES profesores(dniP)
                 );
                 CREATE TABLE IF NOT EXISTS notas (
+                    notaId INTEGER PRIMARY KEY,
                     dniP TEXT NOT NULL,
                     dniA TEXT NOT NULL,
                     nota REAL NOT NULL,
-                    materia TEXT NOT NULL,
+                    materiaId INTEGER NOT NULL,
                     FOREIGN KEY(dniP) REFERENCES profesores(dniP),
-                    FOREIGN KEY(dniA) REFERENCES alumnos(dniA)
+                    FOREIGN KEY(dniA) REFERENCES alumnos(dniA),
+                    FOREIGN KEY(materiaId) REFERENCES materias(materiaId)
                 );
             """
             stmt.executeUpdate(sql)

@@ -70,15 +70,15 @@ class SQLiteCRUD {
     }
 
     fun insertNotas(notaData: NotaData) {
-        val sql = "INSERT INTO notas (dniP, dniA, materia, nota) VALUES (?, ?, ?, ?)"
+        val sql = "INSERT INTO notas (dniP, dniA, materiaId, nota) VALUES (?, ?, ?, ?)"
 
         try {
             SQLiteConnection.connect()?.use { conn ->
                 conn.prepareStatement(sql).use { stmt ->
                     stmt.setString(1 , notaData.dniDelProfesor)
                     stmt.setString(2 , notaData.dniDelAlumno)
-                    stmt.setString(3 , notaData.nombreDeLaMateria)
-                    stmt.setDouble(4 , notaData.nota)
+                    stmt.setInt(3 , notaData.id)
+                    stmt.setDouble(4 , notaData.nota ?: 0.0)
                     stmt.executeUpdate()
                 }
             }
@@ -99,9 +99,8 @@ class SQLiteCRUD {
                 alumnos.nombreCompletoA,
                 notas.nota,
                 profesores.nombreCompletoP,
-                notas.materia,
-                notas.dniA,
-                notas.dniP
+                materias.materia,
+                notas.notaId
             FROM
                 alumnos
             JOIN
@@ -109,8 +108,7 @@ class SQLiteCRUD {
             JOIN
                 profesores ON profesores.dniP = notas.dniP
             JOIN
-                materias ON materias.dniP = profesores.dniP
-                AND materias.materia = notas.materia
+                materias ON materias.materiaId = notas.materiaId
             WHERE 
                 alumnos.nombreCompletoA LIKE ?;
             """
@@ -126,8 +124,7 @@ class SQLiteCRUD {
                             nota = resultSet.getDouble(2),
                             nombreDelProfesor = resultSet.getString(3),
                             nombreDeLaMateria = resultSet.getString(4),
-                            dniDelAlumno = resultSet.getString(5),
-                            dniDelProfesor = resultSet.getString(6)
+                            notaId = resultSet.getInt(5)
                         )
                     )
                 }
@@ -143,9 +140,8 @@ class SQLiteCRUD {
                 alumnos.nombreCompletoA,
                 notas.nota,
                 profesores.nombreCompletoP,
-                notas.materia,
-                notas.dniA,
-                notas.dniP
+                materias.materia,
+                notas.notaId
             FROM
                 alumnos
             JOIN
@@ -153,8 +149,7 @@ class SQLiteCRUD {
             JOIN
                 profesores ON profesores.dniP = notas.dniP
             JOIN
-                materias ON materias.dniP = profesores.dniP
-                AND materias.materia = notas.materia
+                materias ON materias.materiaId = notas.materiaId
             WHERE 
                 alumnos.dniA LIKE ?;     
             """
@@ -170,8 +165,7 @@ class SQLiteCRUD {
                             nota = resultSet.getDouble(2),
                             nombreDelProfesor = resultSet.getString(3),
                             nombreDeLaMateria = resultSet.getString(4),
-                            dniDelAlumno = resultSet.getString(5),
-                            dniDelProfesor = resultSet.getString(6)
+                            notaId = resultSet.getInt(5)
                         )
                     )
                 }
@@ -181,19 +175,19 @@ class SQLiteCRUD {
     }
 
     //delete
-    fun deleteNotaByDni(dniA: String) {
+    fun deleteNotaById(id: Int) {
         val query = """
             DELETE 
                 FROM
                     notas
                 WHERE
-                    notas.dniA = ?
+                    notas.notaId = ?
             ;
         """.trimIndent()
 
         SQLiteConnection.connect()?.use { conn ->
             conn.prepareStatement(query).use { stmt ->
-                stmt.setString(1, dniA)
+                stmt.setInt(1, id)
                 stmt.executeUpdate()
             }
         }
@@ -244,7 +238,7 @@ class SQLiteCRUD {
 
     fun selectMaterias(): List<MateriaData> {
         val data = mutableListOf<MateriaData>()
-        val sql = "SELECT materia, dniP FROM materias;"
+        val sql = "SELECT materia, dniP, materiaId FROM materias;"
 
         SQLiteConnection.connect()?.use { conn ->
             conn.prepareStatement(sql).use { stmt ->
@@ -253,7 +247,8 @@ class SQLiteCRUD {
                     data.add(
                         MateriaData(
                             nombre = resultSet.getString(1),
-                            dniDelProfesor = resultSet.getString(2)
+                            dniDelProfesor = resultSet.getString(2),
+                            materiaId = resultSet.getInt(3)
                         )
                     )
                 }
@@ -373,19 +368,45 @@ class SQLiteCRUD {
     }
 
     fun deleteProfesorByDNI(dniP: String) {
-        val query = """
-            DELETE 
-            FROM
-                profesores
-            WHERE
-                dniP = ?
-            ;
+        val deleteNotasQuery = """
+            DELETE FROM notas
+            WHERE dniP = ?
+        """.trimIndent()
+
+        val deleteMateriasQuery = """
+            DELETE FROM materias
+            WHERE dniP = ?
+        """.trimIndent()
+
+        val deleteProfesorQuery = """
+            DELETE FROM profesores
+            WHERE dniP = ?
         """.trimIndent()
 
         SQLiteConnection.connect()?.use { conn ->
-            conn.prepareStatement(query).use { stmt ->
-                stmt.setString(1, dniP)
-                stmt.executeUpdate()
+            conn.autoCommit = false // iniciamos la transacción
+            try {
+                conn.prepareStatement(deleteNotasQuery).use { stmt ->
+                    stmt.setString(1, dniP)
+                    stmt.executeUpdate()
+                }
+
+
+                conn.prepareStatement(deleteMateriasQuery).use { stmt ->
+                    stmt.setString(1, dniP)
+                    stmt.executeUpdate()
+                }
+
+
+                conn.prepareStatement(deleteProfesorQuery).use { stmt ->
+                    stmt.setString(1, dniP)
+                    stmt.executeUpdate()
+                }
+
+                conn.commit()
+            } catch (e: Exception) {
+                conn.rollback()
+                throw e
             }
         }
     }
@@ -419,18 +440,96 @@ class SQLiteCRUD {
         return data
     }
 
-    //para limpiar la db
-    fun clearAllTables() {
-        val tables = listOf("alumnos" , "profesores" , "materias" , "notas")
-
+    fun listOfMateriasByDNI(dniP: String): List<MateriaData> {
+        val data = mutableListOf<MateriaData>()
+        val query = """
+            SELECT 
+                materias.materia,
+                materias.dniP,
+                materias.materiaId
+            FROM
+                materias
+            WHERE
+                materias.dniP LIKE ?
+            ;
+        """.trimIndent()
         SQLiteConnection.connect()?.use { conn ->
-            tables.forEach { table ->
-                val sql = "DELETE FROM $table"
-                conn.prepareStatement(sql).use { stmt ->
-                    stmt.executeUpdate()
+            conn.prepareStatement(query).use { stmt ->
+                stmt.setString(1, "%$dniP%")
+                val resultSet = stmt.executeQuery()
+                while (resultSet.next()) {
+                    data.add(
+                        MateriaData(
+                            resultSet.getString(1),
+                            resultSet.getString(2),
+                            resultSet.getInt(3)
+                        )
+                    )
                 }
             }
-            println("Se han eliminado todos los datos de las tablas.")
+        }
+        return data
+    }
+
+    fun listOfMateriasByNombre(name: String): List<MateriaData> {
+        val data = mutableListOf<MateriaData>()
+        val query = """
+            SELECT 
+                materias.materia,
+                materias.dniP,
+                materias.materiaId
+            FROM
+                materias
+            WHERE
+                materias.materia LIKE ?
+            ;
+        """.trimIndent()
+        SQLiteConnection.connect()?.use { conn ->
+            conn.prepareStatement(query).use { stmt ->
+                stmt.setString(1, "%$name%")
+                val resultSet = stmt.executeQuery()
+                while (resultSet.next()) {
+                    data.add(
+                        MateriaData(
+                            resultSet.getString(1),
+                            resultSet.getString(2),
+                            resultSet.getInt(3)
+                        )
+                    )
+                }
+            }
+        }
+        return data
+    }
+
+    fun deleteMateriasById(id: Int) {
+        val deleteMaterias = """
+            DELETE FROM materias
+            WHERE materiaId = ?
+        """.trimIndent()
+        val deleteNotas = """
+            DELETE FROM notas
+            WHERE materiaId = ?
+        """.trimIndent()
+
+
+        SQLiteConnection.connect()?.use { conn ->
+            conn.autoCommit = false
+            try {
+                conn.prepareStatement(deleteNotas).use { statement ->
+                    statement.setInt(1, id)
+                    statement.executeUpdate()
+                }
+                conn.prepareStatement(deleteMaterias).use { statement ->
+                    statement.setInt(1, id)
+                    statement.executeUpdate()
+                }
+                conn.commit()
+            } catch (e: Exception) {
+                conn.rollback()
+                throw e
+            }
         }
     }
+
 }

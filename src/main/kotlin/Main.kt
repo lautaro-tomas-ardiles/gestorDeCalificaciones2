@@ -4,7 +4,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
@@ -14,6 +13,11 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import colors.black
 import screens.*
+import sql.SQLiteCRUD
+import sql.data.AlumnoData
+import sql.data.MateriaData
+import sql.data.NotaData
+import sql.data.ProfesorData
 import utilitis.customSnackbar
 import utilitis.menuBar
 
@@ -83,6 +87,11 @@ fun app() {
                     }
 
                     7 -> {
+                        previousScreen = screen
+                        mainListOfMaterias(snackbarHostState)
+                    }
+
+                    8 -> {
                         previousScreen = screen
                         mainOutput(snackbarHostState)
                     }

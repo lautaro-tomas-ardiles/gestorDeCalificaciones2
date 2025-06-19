@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import sql.data.AlumnoData
 import sql.data.MateriaData
 import sql.data.NotaData
@@ -16,11 +18,50 @@ import sql.data.ProfesorData
 class SqlViewModel : ViewModel() {
     private val crud = SQLiteCRUD()
 
+    /**
+     * Actualmente, hay un problema porque se usa viewModelScope.launch(Dispatchers.IO)
+     * en funciones que se ejecutan en una misma pantalla (antes no pasaba por qué usaba
+     * returns de listas y no variables internas en view model) haci que se va a usar
+     * mutex para evitar esto
+     */
+
+    private val mutex = Mutex()
+
     var mensaje by mutableStateOf<String?>(null)
         private set
 
+    private val _alumnos = mutableStateOf<List<AlumnoData>>(emptyList())
+        val alumnos = _alumnos
+
+    private val _profesores = mutableStateOf<List<ProfesorData>>(emptyList())
+        val profesores = _profesores
+
+    private val _materias = mutableStateOf<List<MateriaData>>(emptyList())
+        val materias = _materias
+
+    private val _outPut = mutableStateOf<List<OutPutData>>(emptyList())
+        val outPut = _outPut
+
+    /**
+     * Empty campos: revisa si un número indefinido de variable de tipo
+     * string están vacíos
+     *
+     * @param campos todos los string que se comprueban
+     * @return retorna un booleano, verdadero si alguna esta vació
+     * y false si todos tiene algo
+     */
+    private fun emptyCampos(vararg campos: String): Boolean {
+        return campos.any { it.isBlank() }
+    }
+
+    /**
+     * Agregar alumno: se agrega un alumno a la db
+     *
+     * @param nombreAlumno nombre del alumno
+     * @param dniAlumno dni del alumno
+     */
     fun agregarAlumno(nombreAlumno: String , dniAlumno: String) {
-        if (nombreAlumno.isBlank() || dniAlumno.isBlank()) {
+        if (emptyCampos(nombreAlumno,dniAlumno)) {
             mensaje = "Nombre y DNI del alumno no pueden estar vacíos."
             return
         }
@@ -35,6 +76,12 @@ class SqlViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Agregar profesor: se agrega un profesor a la db
+     *
+     * @param nombreProfesor nombre del profesor
+     * @param dniProfesor dni del profesor
+     */
     fun agregarProfesor(nombreProfesor: String , dniProfesor: String) {
         if (nombreProfesor.isBlank() || dniProfesor.isBlank()) {
             mensaje = "Nombre y DNI del profesor no pueden estar vacíos."
@@ -51,7 +98,14 @@ class SqlViewModel : ViewModel() {
         }
     }
 
-    fun agregarMateria(dniProfeMateria: String , materia: String) {
+    /**
+     * Agrega una nueva materia al sistema con el DNI del profesor asociado.
+     * materiaId es -1 porque es auto incremental
+     *
+     * @param dniProfeMateria DNI del profesor que dicta la materia.
+     * @param materia Nombre de la materia a agregar.
+     */
+    fun agregarMateria(dniProfeMateria: String, materia: String) {
         if (dniProfeMateria.isBlank() || materia.isBlank()) {
             mensaje = "DNI del profesor y nombre de la materia no pueden estar vacíos."
             return
@@ -59,7 +113,7 @@ class SqlViewModel : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                crud.insertMaterias(MateriaData(materia, dniProfeMateria))
+                crud.insertMaterias(MateriaData(materia, dniProfeMateria, -1))
                 mensaje = "Materia agregada correctamente."
             } catch (e: Exception) {
                 mensaje = "Error: ${e.message}"
@@ -67,13 +121,24 @@ class SqlViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Agrega una nota para un alumno en una materia, validando los campos requeridos.
+     *
+     * @param data Objeto [NotaData] que contiene la información de la nota, alumno, profesor y materia.
+     */
     fun agregarNota(data: NotaData) {
-        if (
-            data.dniDelProfesor.isBlank() ||
-            data.dniDelAlumno.isBlank() ||
-            data.nombreDeLaMateria.isBlank()
-        ) {
+        if (emptyCampos(data.dniDelProfesor, data.dniDelAlumno)) {
             mensaje = "Todos los campos son obligatorios para registrar una nota."
+            return
+        }
+
+        if (data.nota == null || data.nota >= 10 || data.nota <= 0) {
+            mensaje = "La nota tiene que ser un numero(menor a 10 y positivo)."
+            return
+        }
+
+        if (data.id == -1) {
+            mensaje = "tiene que seleccionar una materia"
             return
         }
 
@@ -87,111 +152,250 @@ class SqlViewModel : ViewModel() {
         }
     }
 
-    fun obtenerAlumnos(): List<AlumnoData> {
-        return try {
-            crud.selectAlumnos()
-        } catch (e: Exception) {
-            mensaje = "Error: ${e.message}"
-            emptyList()
+    /**
+     * Carga la lista completa de alumnos desde la base de datos y la guarda en el estado.
+     */
+    fun cargarAlumnos() {
+        viewModelScope.launch(Dispatchers.IO) {
+            mutex.withLock {
+                try {
+                    _alumnos.value = crud.selectAlumnos()
+                } catch (e: Exception) {
+                    mensaje = "Error: ${e.message}"
+                }
+            }
         }
     }
 
-    fun obtenerProfesores(): List<ProfesorData> {
-        return try {
-            crud.selectProfesores()
-        } catch (e: Exception) {
-            mensaje = "Error: ${e.message}"
-            emptyList()
+    /**
+     * Carga la lista completa de profesores desde la base de datos y la guarda en el estado.
+     */
+    fun cargarProfesores() {
+        viewModelScope.launch(Dispatchers.IO) {
+            mutex.withLock {
+                try {
+                    _profesores.value = crud.selectProfesores()
+                } catch (e: Exception) {
+                    mensaje = "Error: ${e.message}"
+                }
+            }
         }
     }
 
-    fun obtenerMaterias(): List<MateriaData> {
-        return try {
-            crud.selectMaterias()
-        } catch (e: Exception) {
-            mensaje = "Error: ${e.message}"
-            emptyList()
+    /**
+     * Carga la lista completa de materias desde la base de datos y la guarda en el estado.
+     */
+    fun cargarMaterias() {
+        viewModelScope.launch(Dispatchers.IO) {
+            mutex.withLock {
+                try {
+                    _materias.value = crud.selectMaterias()
+                } catch (e: Exception) {
+                    mensaje = "Error: ${e.message}"
+                }
+            }
         }
     }
 
-    fun buscarAlumnoPorNombre(nombre: String): List<OutPutData> {
-        return try {
-            crud.selectAlumnosByNameAndNotas(nombre)
-        } catch (e: Exception) {
-            mensaje = "Error: ${e.message}"
-            emptyList()
+    /** Filtra la lista de alumnos por nombre o DNI, ignorando mayúsculas/minúsculas.
+     *
+     * @param nombreAndDni Cadena a buscar en el nombre o DNI del alumno.
+     */
+    fun filtrarAlumnos(nombreAndDni: String) {
+        viewModelScope.launch(Dispatchers.Default) {
+            mutex.withLock {
+                _alumnos.value = _alumnos.value.filter {
+                    it.nombre.contains(nombreAndDni, ignoreCase = true) ||
+                            it.dni.contains(nombreAndDni, ignoreCase = true)
+                }
+            }
         }
     }
 
-    fun buscarAlumnoPorDNI(dni: String): List<OutPutData> {
-        return try {
-            crud.selectAlumnosByDNIAndNotas(dni)
-        } catch (e: Exception) {
-            mensaje = "Error: ${e.message}"
-            emptyList()
+    /**
+     * Filtra la lista de profesores por nombre o DNI, ignorando mayúsculas/minúsculas.
+     *
+     * @param nombreAndDni Cadena a buscar en el nombre o DNI del profesor.
+     */
+    fun filtrarProfesores(nombreAndDni: String) {
+        viewModelScope.launch(Dispatchers.Default) {
+            mutex.withLock {
+                profesores.value = _profesores.value.filter {
+                    it.nombre.contains(nombreAndDni, ignoreCase = true) ||
+                            it.dni.contains(nombreAndDni, ignoreCase = true)
+                }
+            }
         }
     }
 
-    fun eliminarNotaPorDNI(dni: String) {
-        try {
-            crud.deleteNotaByDni(dni)
-            mensaje = "Nota eliminado correctamente"
-        }catch (e: Exception) {
-            mensaje = "Error: ${e.message}"
+    /**
+     * Filtra la lista de materias por nombre de la materia y DNI del profesor.
+     *
+     * @param dni DNI del profesor al que están asignadas las materias.
+     * @param nombre Nombre parcial o completo de la materia a buscar.
+     */
+    fun filtrarMaterias(dni: String, nombre: String) {
+        viewModelScope.launch(Dispatchers.Default) {
+            mutex.withLock {
+                _materias.value.filter {
+                    it.nombre.contains(nombre, ignoreCase = true) &&
+                            it.dniDelProfesor == dni
+                }
+            }
         }
     }
 
-    fun listaDeAlumnosPorDNI(dni: String): List<AlumnoData> {
-        return try {
-            crud.listOfAlumnosByDNI(dni)
-        }catch (e: Exception) {
-            mensaje = "Error: ${e.message}"
-            emptyList()
+    fun buscarNotaDeAlumnoPorNombre(nombre: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            mutex.withLock {
+                try {
+                    _outPut.value = crud.selectAlumnosByNameAndNotas(nombre)
+                } catch (e: Exception) {
+                    mensaje = "Error: ${e.message}"
+                }
+            }
+        }
+    }
+
+    fun buscarNotaDelAlumnoPorDNI(dni: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            mutex.withLock {
+                try {
+                    _outPut.value = crud.selectAlumnosByDNIAndNotas(dni)
+                } catch (e: Exception) {
+                    mensaje = "Error: ${e.message}"
+                }
+            }
+        }
+    }
+
+    fun eliminarNotaPorId(id: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            mutex.withLock {
+                try {
+                    crud.deleteNotaById(id)
+                    mensaje = "Nota eliminado correctamente"
+                } catch (e: Exception) {
+                    mensaje = "Error: ${e.message}"
+                }
+            }
+        }
+    }
+
+    fun buscarAlumnosPorDNI(dni: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            mutex.withLock {
+                try {
+                    _alumnos.value = crud.listOfAlumnosByDNI(dni)
+                } catch (e: Exception) {
+                    mensaje = "Error: ${e.message}"
+                    _alumnos.value = emptyList()
+                }
+            }
         }
     }
 
     fun eliminarAlumnoPorDNI(dni: String) {
-        try {
-            crud.deleteAlumnoByDNI(dni)
-            mensaje = "Alumno eliminado correctamente"
-        }catch (e: Exception) {
-            mensaje = "Error: ${e.message}"
+        viewModelScope.launch(Dispatchers.IO) {
+            mutex.withLock {
+                try {
+                    crud.deleteAlumnoByDNI(dni)
+                    mensaje = "Alumno eliminado correctamente"
+                } catch (e: Exception) {
+                    mensaje = "Error: ${e.message}"
+                }
+            }
         }
     }
 
-    fun listaDeAlumnosPorNombre(nombre: String): List<AlumnoData> {
-        return try {
-            crud.listOfAlumnosByNombre(nombre)
-        }catch (e: Exception) {
-            mensaje = "Error: ${e.message}"
-            emptyList()
+    fun buscarAlumnosPorNombre(nombre: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            mutex.withLock {
+                try {
+                    _alumnos.value = crud.listOfAlumnosByNombre(nombre)
+                } catch (e: Exception) {
+                    mensaje = "Error: ${e.message}"
+                    _alumnos.value = emptyList()
+                }
+            }
         }
     }
 
-    fun listaDeProfesoresPorDNI(dni: String): List<ProfesorData> {
-        return try {
-            crud.listOfProfesoresByDNI(dni)
-        }catch (e: Exception) {
-            mensaje = "Error: ${e.message}"
-            emptyList()
+    fun buscarProfesoresPorNombre(nombre: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            mutex.withLock {
+                try {
+                    _profesores.value = crud.listOfProfesoresByNombre(nombre)
+                } catch (e: Exception) {
+                    mensaje = "Error: ${e.message}"
+                    _profesores.value = emptyList()
+                }
+            }
         }
     }
 
     fun eliminarProfesorPorDNI(dni: String) {
-        try {
-            crud.deleteProfesorByDNI(dni)
-            mensaje = "Alumno eliminado correctamente"
-        }catch (e: Exception) {
-            mensaje = "Error: ${e.message}"
+        viewModelScope.launch(Dispatchers.IO) {
+            mutex.withLock {
+                try {
+                    crud.deleteProfesorByDNI(dni)
+                    mensaje = "profesor eliminado correctamente"
+                } catch (e: Exception) {
+                    mensaje = "Error: ${e.message}"
+                }
+            }
         }
     }
 
-    fun listaDeProfesoresPorNombre(nombre: String): List<ProfesorData> {
-        return try {
-            crud.listOfProfesoresByNombre(nombre)
-        }catch (e: Exception) {
-            mensaje = "Error: ${e.message}"
-            emptyList()
+    fun buscarProfesoresPorDNI(dni: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            mutex.withLock {
+                try {
+                    _profesores.value = crud.listOfProfesoresByDNI(dni)
+                } catch (e: Exception) {
+                    mensaje = "Error: ${e.message}"
+                    _profesores.value = emptyList()
+                }
+            }
+        }
+    }
+
+    fun buscarMateriasPorDNI(dni: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            mutex.withLock {
+                try {
+                    _materias.value = crud.listOfMateriasByDNI(dni)
+                } catch (e: Exception) {
+                    mensaje = "Error: ${e.message}"
+                    _materias.value = emptyList()
+                }
+            }
+        }
+    }
+
+    fun buscarMateriasPorNombre(nombre: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            mutex.withLock {
+                try {
+                    _materias.value = crud.listOfMateriasByNombre(nombre)
+                } catch (e: Exception) {
+                    mensaje = "Error: ${e.message}"
+                    _materias.value = emptyList()
+                }
+            }
+        }
+    }
+
+    fun eliminarMateriaPorId(id: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            mutex.withLock {
+                try {
+                    crud.deleteMateriasById(id)
+                    mensaje = "materia eliminada correctamente"
+                } catch (e: Exception) {
+                    mensaje = "Error: ${e.message}"
+                }
+            }
         }
     }
 

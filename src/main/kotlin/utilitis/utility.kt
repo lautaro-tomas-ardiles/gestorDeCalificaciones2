@@ -5,8 +5,6 @@ package utilitis
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandIn
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.BorderStroke
@@ -38,9 +36,12 @@ import colors.orange
 import colors.red
 
 /**
- * Las funciones menuBar y menuItem se encargan se la barra que permite el cambio
- * de pantallas. Menu item tiene los items con su borde texto y aspecto, menu bar
- * contiene los items
+ * Componente que representa un ítem del menú de navegación.
+ *
+ * @param isSelected Indica si este ítem está actualmente seleccionado.
+ * @param title Texto que se muestra dentro del ítem.
+ * @param modifier Modificador de estilo y comportamiento.
+ * @param onClick Acción a ejecutar al hacer clic sobre el ítem.
  */
 @Composable
 fun menuItem(
@@ -97,6 +98,12 @@ fun menuItem(
     }
 }
 
+/**
+ * Barra de navegación horizontal que permite cambiar entre distintas pantallas.
+ *
+ * @param selectedScreen Índice de la pantalla actualmente seleccionada.
+ * @param onScreenChange Callback que se ejecuta al seleccionar una nueva pantalla.
+ */
 @Composable
 fun menuBar(
     selectedScreen: Int,
@@ -151,19 +158,33 @@ fun menuBar(
         ) {
             onScreenChange(6)
         }
-        //búsqueda
+        //Lista de materias
         menuItem(
             isSelected = selectedScreen == 7,
-            title = "Búsqueda",
+            title = "Lista de materias",
             modifier = Modifier.weight(1f)
         ) {
             onScreenChange(7)
+        }
+        //búsqueda
+        menuItem(
+            isSelected = selectedScreen == 8,
+            title = "Búsqueda",
+            modifier = Modifier.weight(1f)
+        ) {
+            onScreenChange(8)
         }
     }
 }
 
 /**
- * La function textBar permite la entrada de texto permitiendo un aspecto consistent en las entradas de texto
+ * Campo de entrada de texto reutilizable con estilo personalizado.
+ *
+ * @param value Texto actual del campo.
+ * @param onValueChange Callback que se ejecuta cuando el texto cambia.
+ * @param label Etiqueta visible dentro del campo.
+ * @param trailingIcon Ícono opcional que aparece al final del campo.
+ * @param modifier Modificador de estilo y tamaño.
  */
 @Composable
 fun textBar(
@@ -202,7 +223,10 @@ fun textBar(
 }
 
 /**
- * Es el botón para us general dentro de la aplicación
+ * Botón estilizado reutilizable en la aplicación.
+ *
+ * @param label Texto del botón.
+ * @param onClick Acción a ejecutar al hacer clic en el botón.
  */
 @Composable
 fun button(
@@ -229,7 +253,9 @@ fun button(
 }
 
 /**
- * Es la barra emergente con mensajes de error y de cumplimiento?, no sé escribir
+ * Snackbar personalizado para mostrar mensajes de notificación.
+ *
+ * @param snackbarData Datos del snackbar, como el mensaje y duración.
  */
 @Composable
 fun customSnackbar(snackbarData: SnackbarData) {
@@ -248,18 +274,29 @@ fun customSnackbar(snackbarData: SnackbarData) {
 }
 
 /**
- * Box con text bar para encontrar elementos de una lista
+ * Componente que permite buscar y seleccionar elementos de una lista mediante un campo de texto
+ * y un menú desplegable (DropdownMenu).
+ *
+ * @param T Tipo genérico de los elementos en la lista.
+ * @param label Etiqueta que se muestra en el campo de texto.
+ * @param expanded Indica si el menú desplegable está visible.
+ * @param onExpandedChange Callback que actualiza el estado de expansión del menú.
+ * @param inputText Texto actual ingresado por el usuario.
+ * @param onInputChange Callback que se ejecuta cuando el texto de entrada cambia.
+ * @param options Lista de elementos a mostrar en el menú desplegable.
+ * @param displayText Función que convierte cada elemento en una cadena para mostrar.
+ * @param onSelect Callback que se ejecuta al seleccionar un elemento del menú.
  */
 @Composable
 fun <T> selectorBox(
-    label: String, // label del text bar
-    expanded: Boolean, // si se expende o no en dropMenu
-    onExpandedChange: (Boolean) -> Unit,// el cambio de estado(cambia si esta expandido)
-    inputText: String,// texto que se ingresa
-    onInputChange: (String) -> Unit,// su cambio cuando se selection un elemento
-    options: List<T>,// lista de objetos del dropMenu (el tipo <T> permite que se especifique su tipo al usarlo)
-    displayText: (T) -> String,// como es el texto donde se muestran las options
-    onSelect: (T) -> Unit // el que se selecciona
+    label: String,
+    expanded: Boolean,
+    onExpandedChange: (Boolean) -> Unit,
+    inputText: String,
+    onInputChange: (String) -> Unit,
+    options: List<T>,
+    displayText: (T) -> String,
+    onSelect: (T) -> Unit
 ) {
     Box {
         textBar(
@@ -355,12 +392,16 @@ fun <T> selectorBox(
 }
 
 /**
- * Box que muestra los datos de una lista
+ * Componente para mostrar una lista de datos como texto en una caja decorada.
+ *
+ * @param T Tipo de datos en la lista.
+ * @param data Lista de datos a mostrar.
+ * @param color Color del borde de la caja.
  */
 @Composable
-fun <T> boxOfData(data: List<T>, color: Color) {
+fun <T> boxOfData(data: List<T>, color: Color, modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .border(
                 width = 2.dp,
                 color = color,
@@ -380,16 +421,41 @@ fun <T> boxOfData(data: List<T>, color: Color) {
 }
 
 /**
- * Tiene dos barras de búsqueda con sus respectivos botones uno para dni y otro para nombre
+ * Componente con dos campos de búsqueda y sus respectivos botones.
+ * Permite buscar por nombre o por DNI.
+ *
+ * @param onSearchByName Acción que se ejecuta con el texto del nombre.
+ * @param onSearchByDNI Acción que se ejecuta con el texto del DNI.
+ * @param isAlumno Indica si se está buscando un alumno o un profesor.
+ * @param isMateria Indica si se esta buscando materia
  */
 @Composable
 fun search(
     onSearchByName: (String) -> Unit,
     onSearchByDNI: (String) -> Unit,
-    isAlumno: Boolean = true
+    isAlumno: Boolean = true,
+    isMateria: Boolean = false
 ) {
     var searchByName by remember { mutableStateOf("") }
     var searchByDNI by remember { mutableStateOf("") }
+
+    val labelForNombre =
+        if (isAlumno) {
+            "Nombre del alumno"
+        } else if (isMateria) {
+            "Nombre de la materia"
+        } else {
+            "Nombre del profesor"
+        }
+
+    val labelForDNI =
+        if (isAlumno) {
+            "D.N.I del alumno..."
+        } else if (isMateria) {
+            "D.N.I del profesor..."
+        } else {
+            "D.N.I del profesor..."
+        }
 
     Row(
         modifier = Modifier
@@ -401,7 +467,7 @@ fun search(
         textBar(
             value = searchByName,
             onValueChange = { searchByName = it },
-            label = if (isAlumno) "Nombre del alumno" else "Nombre del profesor",
+            label = labelForNombre,
             modifier = Modifier.weight(1f)
         )
         Spacer(modifier = Modifier.padding(14.dp))
@@ -416,7 +482,7 @@ fun search(
         textBar(
             value = searchByDNI,
             onValueChange = { searchByDNI = it },
-            label = if (isAlumno) "D.N.I del alumno..." else "D.N.I del profesor...",
+            label = labelForDNI,
             modifier = Modifier.weight(1f)
         )
         Spacer(modifier = Modifier.padding(14.dp))
