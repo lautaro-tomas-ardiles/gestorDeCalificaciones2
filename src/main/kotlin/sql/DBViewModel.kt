@@ -14,13 +14,6 @@ import sql.data.*
 class DBViewModel : ViewModel() {
     private val crud = SupabaseCRUD()
 
-    /**
-     * Actualmente, hay un problema porque se usa viewModelScope.launch(Dispatchers.IO)
-     * en funciones que se ejecutan en una misma pantalla (antes no pasaba por qué usaba
-     * returns de listas y no variables internas en view model) haci que se va a usar
-     * mutex para evitar esto
-     */
-
     private val mutex = Mutex()
 
     var mensaje by mutableStateOf<String?>(null)
