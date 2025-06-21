@@ -14,14 +14,14 @@ import androidx.compose.ui.unit.dp
 import colors.orange
 import colors.red
 import sql.DBViewModel
-import sql.data.OutPutData
+import sql.data.MateriaData
 import utilitis.boxOfData
 import utilitis.button
 import utilitis.search
 
 @Composable
-fun textsOutPut(
-    data: List<OutPutData>,
+fun ListOfMateriasOutPut(
+    data: List<MateriaData>,
     sql: DBViewModel,
     onRefresh: () -> Unit
 ) {
@@ -29,25 +29,37 @@ fun textsOutPut(
     Column(
         modifier = Modifier
             .padding(start = 30.dp)
-            .fillMaxWidth()
             .verticalScroll(scroll)
+            .fillMaxSize()
     ) {
-        //indica como se disponen los datos
-        boxOfData(
-            data = listOf("Nombre Del alumno", "Nota", "Nombre del profesor", "Materia"),
-            color = red
-        )
+        var headerVisible by remember { mutableStateOf(false) }
+        LaunchedEffect(Unit) { headerVisible = true }
+
+        AnimatedVisibility(
+            visible = headerVisible,
+            enter = slideInHorizontally(
+                initialOffsetX = { -it },
+                animationSpec = tween(durationMillis = 300)
+            )
+        ) {
+            boxOfData(
+                data = listOf("Nombre De la materia", "DNI del profesor"),
+                color = red
+            )
+        }
+
         Spacer(modifier = Modifier.padding(20.dp))
+
         if (data.isEmpty()) {
             AnimatedVisibility(
-                true,
+                visible = true,
                 enter = slideInHorizontally(
                     initialOffsetX = { -it },
                     animationSpec = tween(300)
                 )
             ) {
                 boxOfData(
-                    data = listOf("no hay datos con esos nombres o dni"),
+                    data = listOf("no hay datos"),
                     color = orange
                 )
             }
@@ -57,7 +69,7 @@ fun textsOutPut(
             // Estado para controlar visibilidad de animación
             var visible by remember { mutableStateOf(false) }
             // Disparar la animación al componer el ítem
-            LaunchedEffect(item.notaId) { visible = true }
+            LaunchedEffect(item.materiaId) { visible = true }
 
             // AnimatedVisibility con transición horizontal suave
             AnimatedVisibility(
@@ -74,17 +86,13 @@ fun textsOutPut(
                 Column {
                     Row {
                         boxOfData(
-                            listOf(
-                                item.dniA.nombreA, item.nota,
-                                item.dniP.nombreP, item.materiaId.materia,
-                                item.notaId
-                            ),
+                            listOf(item.materia, item.dniP),
                             orange
                         )
                         Spacer(modifier = Modifier.padding(5.dp))
                         button("×") {
                             visible = false
-                            sql.eliminarNotaPorId(item.notaId)
+                            sql.eliminarMateriaPorId(item.materiaId)
                             onRefresh()
                         }
                     }
@@ -97,29 +105,28 @@ fun textsOutPut(
 }
 
 @Composable
-fun mainOutput(snackbarHostState: SnackbarHostState) {
+fun mainListOfMaterias(snackbarHostState: SnackbarHostState) {
     val sql = remember { DBViewModel() }
     LaunchedEffect(Unit) {
-        sql.buscarNotaDeAlumnoPorNombre("")
+        sql.buscarMateriasPorDNI("")
     }
+    var materias by sql.materias
 
-    val estudiantes by sql.outPut  // Observa directamente el estado
+    LaunchedEffect(sql.mensaje) {
+        sql.mensaje?.let {
+            snackbarHostState.showSnackbar(it)
+            sql.limpiarMensaje()
+        }
+    }
 
     var lastQuery by remember { mutableStateOf("") }
 
     fun refreshList(query: String, isDNI: Boolean = true) {
         lastQuery = query
         if (isDNI) {
-            sql.buscarNotaDelAlumnoPorDNI(query)
+            sql.buscarMateriasPorDNI(query)
         } else {
-            sql.buscarNotaDeAlumnoPorNombre(query)
-        }
-    }
-
-    LaunchedEffect(sql.mensaje) {
-        sql.mensaje?.let {
-            snackbarHostState.showSnackbar(it)
-            sql.limpiarMensaje()
+            sql.buscarMateriasPorNombre(query)
         }
     }
 
@@ -130,10 +137,14 @@ fun mainOutput(snackbarHostState: SnackbarHostState) {
             },
             onSearchByDNI = { search ->
                 refreshList(search)
-            }
+            },
+            isAlumno = false,
+            isMateria = true
         )
-        textsOutPut(estudiantes, sql) {
-            refreshList(lastQuery)
-        }
+        ListOfMateriasOutPut(
+            data = materias,
+            sql = sql,
+            onRefresh = { refreshList(lastQuery) }
+        )
     }
 }

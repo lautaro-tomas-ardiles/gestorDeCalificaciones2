@@ -1,29 +1,100 @@
+import androidx.compose.animation.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import colors.black
 import screens.*
+import utilitis.customSnackbar
+import utilitis.menuBar
 
 @Composable
 fun app() {
     var currentScreen by remember { mutableStateOf(1) }
+    var previousScreen by remember { mutableStateOf(1) }
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    // Cuando currentScreen cambia, cambiamos la pantalla
-    when (currentScreen) {
-        1 -> mainInputAlumno(onScreenChange = { currentScreen = it })
+    Scaffold(
+        backgroundColor = black,
+        snackbarHost = {
+            SnackbarHost(snackbarHostState) { data ->
+                customSnackbar(data)
+            }
+        },
+        topBar = {
+            menuBar(currentScreen) {
+                currentScreen = it
+            }
+        }
+    ) {
+        val isForward = currentScreen > previousScreen
+        Column {
+            AnimatedContent(
+                targetState = currentScreen,
+                transitionSpec = {
+                    if (isForward) {
+                        (slideInHorizontally { width -> width } + fadeIn())
+                            .togetherWith(slideOutHorizontally { width -> -width } + fadeOut())
+                    } else {
+                        (slideInHorizontally { width -> -width } + fadeIn())
+                            .togetherWith(slideOutHorizontally { width -> width } + fadeOut())
+                    }
+                },
+                label = "screenTransition"
+            ) { screen ->
+                when (screen) {
+                    1 -> {
+                        previousScreen = screen
+                        mainInputAlumno(snackbarHostState)
+                    }
 
-        2 -> mainInputProfesor(onScreenChange = { currentScreen = it })
+                    2 -> {
+                        previousScreen = screen
+                        mainInputProfesor(snackbarHostState)
+                    }
 
-        3 -> mainInputMateria(onScreenChange = { currentScreen = it })
+                    3 -> {
+                        previousScreen = screen
+                        mainInputMateria(snackbarHostState)
+                    }
 
-        4 -> mainInputNota(onScreenChange = { currentScreen = it })
+                    4 -> {
+                        previousScreen = screen
+                        mainInputNota(snackbarHostState)
+                    }
 
-        5 -> mainOutput(onScreenChange = { currentScreen = it })
+                    5 -> {
+                        previousScreen = screen
+                        mainListOfAlumnos(snackbarHostState)
+                    }
+
+                    6 -> {
+                        previousScreen = screen
+                        mainListOfProfesores(snackbarHostState)
+                    }
+
+                    7 -> {
+                        previousScreen = screen
+                        mainListOfMaterias(snackbarHostState)
+                    }
+
+                    8 -> {
+                        previousScreen = screen
+                        mainOutput(snackbarHostState)
+                    }
+                }
+            }
+        }
     }
 }
 
+
 fun main() = application {
     Window(
-        onCloseRequest = ::exitApplication ,
+        onCloseRequest = ::exitApplication,
         title = "Gestor de calificaciones"
     ) {
         app()
