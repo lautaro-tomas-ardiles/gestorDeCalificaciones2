@@ -6,12 +6,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import sql.SqlViewModel
+import sql.DBViewModel
 import utilitis.button
 import utilitis.textBar
 
 @Composable
-fun profesorInputInsert(sql: SqlViewModel) {
+fun profesorInputInsert(sql: DBViewModel) {
     var nombreDelProfesor by remember { mutableStateOf("") }
     var dniDelProfesor by remember { mutableStateOf("") }
 
@@ -49,7 +49,7 @@ fun profesorInputInsert(sql: SqlViewModel) {
 
 @Composable
 fun mainInputProfesor(snackbarHostState: SnackbarHostState) {
-    val sql = remember { SqlViewModel() }
+    val sql = remember { DBViewModel() }
 
     // Mostrar mensaje cuando cambie
     LaunchedEffect(sql.mensaje) {

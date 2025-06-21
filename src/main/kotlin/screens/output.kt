@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import colors.orange
 import colors.red
-import sql.SqlViewModel
+import sql.DBViewModel
 import sql.data.OutPutData
 import utilitis.boxOfData
 import utilitis.button
@@ -22,7 +22,7 @@ import utilitis.search
 @Composable
 fun textsOutPut(
     data: List<OutPutData>,
-    sql: SqlViewModel,
+    sql: DBViewModel,
     onRefresh: () -> Unit
 ) {
     val scroll = rememberScrollState()
@@ -75,8 +75,8 @@ fun textsOutPut(
                     Row {
                         boxOfData(
                             listOf(
-                                item.nombreDelAlumno, item.nota,
-                                item.nombreDelProfesor, item.nombreDeLaMateria,
+                                item.dniA.nombreA, item.nota,
+                                item.dniP.nombreP, item.materiaId.materia,
                                 item.notaId
                             ),
                             orange
@@ -98,7 +98,7 @@ fun textsOutPut(
 
 @Composable
 fun mainOutput(snackbarHostState: SnackbarHostState) {
-    val sql = remember { SqlViewModel() }
+    val sql = remember { DBViewModel() }
     LaunchedEffect(Unit) {
         sql.buscarNotaDeAlumnoPorNombre("")
     }

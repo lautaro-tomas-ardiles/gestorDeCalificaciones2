@@ -6,13 +6,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import sql.SqlViewModel
+import sql.DBViewModel
 import utilitis.button
 import utilitis.selectorBox
 import utilitis.textBar
 
 @Composable
-fun materiaInputInsert(sql: SqlViewModel) {
+fun materiaInputInsert(sql: DBViewModel) {
 
     var nombreDeLaMateria by remember { mutableStateOf("") }
     var selectedProfesor by remember { mutableStateOf("") }
@@ -47,12 +47,15 @@ fun materiaInputInsert(sql: SqlViewModel) {
             onInputChange = {
                 selectedProfesor = it
                 sql.filtrarProfesores(it)
+                if (it.isBlank()) {
+                    dniProfesor = it
+                }
             },
             options = sql.profesores.value,
-            displayText = { "nombre: ${it.nombre} | dni: ${it.dni}" },
+            displayText = { "nombre: ${it.nombreP} | dni: ${it.dniP}" },
             onSelect = {
-                dniProfesor = it.dni
-                selectedProfesor = "nombre: ${it.nombre} | dni: ${it.dni}"
+                dniProfesor = it.dniP
+                selectedProfesor = "nombre: ${it.nombreP} | dni: ${it.dniP}"
                 expandedProfesor = false
             }
         )
@@ -72,7 +75,7 @@ fun materiaInputInsert(sql: SqlViewModel) {
 
 @Composable
 fun mainInputMateria(snackbarHostState: SnackbarHostState) {
-    val sql = remember { SqlViewModel() }
+    val sql = remember { DBViewModel() }
 
     LaunchedEffect(sql.mensaje) {
         sql.mensaje?.let {

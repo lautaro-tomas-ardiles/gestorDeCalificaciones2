@@ -1,8 +1,17 @@
 package sql.data
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class NotaData(
-    val dniDelProfesor: String,
+    @SerialName("dni_p")
+    val dniP: String,
     val nota: Double?,
-    val dniDelAlumno: String,
-    val id: Int
+    @SerialName("dni_a")
+    val dniA: String,
+    @SerialName("materia_id")
+    val materiaId: Int?,
+    @SerialName("nota_id")
+    val notaId: Int? = null
 )

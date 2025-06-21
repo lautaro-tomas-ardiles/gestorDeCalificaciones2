@@ -1,6 +1,12 @@
 package sql.data
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class ProfesorData(
-    val nombre: String,
-    val dni: String
+    @SerialName("nombre_p")
+    val nombreP: String,
+    @SerialName("dni_p")
+    val dniP: String
 )

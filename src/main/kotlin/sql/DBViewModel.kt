@@ -11,8 +11,8 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import sql.data.*
 
-class SqlViewModel : ViewModel() {
-    private val crud = SQLiteCRUD()
+class DBViewModel : ViewModel() {
+    private val crud = SupabaseCRUD()
 
     /**
      * Actualmente, hay un problema porque se usa viewModelScope.launch(Dispatchers.IO)
@@ -109,7 +109,7 @@ class SqlViewModel : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                crud.insertMaterias(MateriaData(materia, dniProfeMateria, -1))
+                crud.insertMaterias(MateriaData(materia, dniProfeMateria))
                 mensaje = "Materia agregada correctamente."
             } catch (e: Exception) {
                 mensaje = "Error: ${e.message}"
@@ -123,7 +123,7 @@ class SqlViewModel : ViewModel() {
      * @param data Objeto [NotaData] que contiene la información de la nota, alumno, profesor y materia.
      */
     fun agregarNota(data: NotaData) {
-        if (emptyCampos(data.dniDelProfesor, data.dniDelAlumno)) {
+        if (emptyCampos(data.dniP, data.dniA)) {
             mensaje = "Todos los campos son obligatorios para registrar una nota."
             return
         }
@@ -133,7 +133,7 @@ class SqlViewModel : ViewModel() {
             return
         }
 
-        if (data.id == -1) {
+        if (data.materiaId == null) {
             mensaje = "tiene que seleccionar una materia"
             return
         }
@@ -198,11 +198,15 @@ class SqlViewModel : ViewModel() {
      * @param nombreAndDni Cadena a buscar en el nombre o DNI del alumno.
      */
     fun filtrarAlumnos(nombreAndDni: String) {
+        if (emptyCampos(nombreAndDni)) {
+            cargarAlumnos()
+        }
+
         viewModelScope.launch(Dispatchers.Default) {
             mutex.withLock {
                 _alumnos.value = _alumnos.value.filter {
-                    it.nombre.contains(nombreAndDni, ignoreCase = true) ||
-                            it.dni.contains(nombreAndDni, ignoreCase = true)
+                    it.nombreA.contains(nombreAndDni, ignoreCase = true) ||
+                            it.dniA.contains(nombreAndDni, ignoreCase = true)
                 }
             }
         }
@@ -214,11 +218,14 @@ class SqlViewModel : ViewModel() {
      * @param nombreAndDni Cadena a buscar en el nombre o DNI del profesor.
      */
     fun filtrarProfesores(nombreAndDni: String) {
+        if (emptyCampos(nombreAndDni)) {
+            cargarProfesores()
+        }
         viewModelScope.launch(Dispatchers.Default) {
             mutex.withLock {
-                profesores.value = _profesores.value.filter {
-                    it.nombre.contains(nombreAndDni, ignoreCase = true) ||
-                            it.dni.contains(nombreAndDni, ignoreCase = true)
+                _profesores.value = _profesores.value.filter {
+                    it.nombreP.contains(nombreAndDni, ignoreCase = true) ||
+                            it.dniP.contains(nombreAndDni, ignoreCase = true)
                 }
             }
         }
@@ -231,11 +238,15 @@ class SqlViewModel : ViewModel() {
      * @param nombre Nombre parcial o completo de la materia a buscar.
      */
     fun filtrarMaterias(dni: String, nombre: String) {
+        if (emptyCampos(dni)) {
+            cargarMaterias()
+        }
+
         viewModelScope.launch(Dispatchers.Default) {
             mutex.withLock {
-                _materias.value.filter {
-                    it.nombre.contains(nombre, ignoreCase = true) &&
-                            it.dniDelProfesor == dni
+                _materias.value = _materias.value.filter {
+                    it.materia.contains(nombre, ignoreCase = true) &&
+                            it.dniP.contains(dni, ignoreCase = true)
                 }
             }
         }
@@ -245,9 +256,10 @@ class SqlViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             mutex.withLock {
                 try {
-                    _outPut.value = crud.selectAlumnosByNameAndNotas(nombre)
+                    _outPut.value = crud.selectAlumnosAndNotasByName(nombre)
                 } catch (e: Exception) {
                     mensaje = "Error: ${e.message}"
+                    println(e.message)
                 }
             }
         }
@@ -257,7 +269,7 @@ class SqlViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             mutex.withLock {
                 try {
-                    _outPut.value = crud.selectAlumnosByDNIAndNotas(dni)
+                    _outPut.value = crud.selectAlumnosAndNotasByDNI(dni)
                 } catch (e: Exception) {
                     mensaje = "Error: ${e.message}"
                 }
@@ -382,12 +394,14 @@ class SqlViewModel : ViewModel() {
         }
     }
 
-    fun eliminarMateriaPorId(id: Int) {
+    fun eliminarMateriaPorId(id: Int?) {
         viewModelScope.launch(Dispatchers.IO) {
             mutex.withLock {
                 try {
-                    crud.deleteMateriasById(id)
-                    mensaje = "materia eliminada correctamente"
+                    if (id != null) {
+                        crud.deleteMateriasById(id)
+                        mensaje = "materia eliminada correctamente"
+                    }
                 } catch (e: Exception) {
                     mensaje = "Error: ${e.message}"
                 }

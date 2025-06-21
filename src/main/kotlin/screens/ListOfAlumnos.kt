@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import colors.orange
 import colors.red
-import sql.SqlViewModel
+import sql.DBViewModel
 import sql.data.AlumnoData
 import utilitis.boxOfData
 import utilitis.button
@@ -22,7 +22,7 @@ import utilitis.search
 @Composable
 fun ListOfAlumnosOutPut(
     data: List<AlumnoData>,
-    sql: SqlViewModel,
+    sql: DBViewModel,
     onRefresh: () -> Unit
 ) {
     val scroll = rememberScrollState()
@@ -69,7 +69,7 @@ fun ListOfAlumnosOutPut(
             // Estado para controlar visibilidad de animación
             var visible by remember { mutableStateOf(false) }
             // Disparar la animación al componer el ítem
-            LaunchedEffect(item.dni) { visible = true }
+            LaunchedEffect(item.dniA) { visible = true }
 
             // AnimatedVisibility con transición horizontal suave
             AnimatedVisibility(
@@ -86,13 +86,13 @@ fun ListOfAlumnosOutPut(
                 Column {
                     Row {
                         boxOfData(
-                            listOf(item.nombre, item.dni),
+                            listOf(item.nombreA, item.dniA),
                             orange
                         )
                         Spacer(modifier = Modifier.padding(5.dp))
                         button("×") {
                             visible = false
-                            sql.eliminarAlumnoPorDNI(item.dni)
+                            sql.eliminarAlumnoPorDNI(item.dniA)
                             onRefresh()
                         }
                     }
@@ -107,7 +107,7 @@ fun ListOfAlumnosOutPut(
 
 @Composable
 fun mainListOfAlumnos(snackbarHostState: SnackbarHostState) {
-    val sql = remember { SqlViewModel() }
+    val sql = remember { DBViewModel() }
     LaunchedEffect(Unit) {
         sql.buscarAlumnosPorDNI("")
     }

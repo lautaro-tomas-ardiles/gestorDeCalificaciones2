@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import colors.orange
 import colors.red
-import sql.SqlViewModel
+import sql.DBViewModel
 import sql.data.MateriaData
 import utilitis.boxOfData
 import utilitis.button
@@ -22,7 +22,7 @@ import utilitis.search
 @Composable
 fun ListOfMateriasOutPut(
     data: List<MateriaData>,
-    sql: SqlViewModel,
+    sql: DBViewModel,
     onRefresh: () -> Unit
 ) {
     val scroll = rememberScrollState()
@@ -86,7 +86,7 @@ fun ListOfMateriasOutPut(
                 Column {
                     Row {
                         boxOfData(
-                            listOf(item.nombre, item.dniDelProfesor),
+                            listOf(item.materia, item.dniP),
                             orange
                         )
                         Spacer(modifier = Modifier.padding(5.dp))
@@ -106,7 +106,7 @@ fun ListOfMateriasOutPut(
 
 @Composable
 fun mainListOfMaterias(snackbarHostState: SnackbarHostState) {
-    val sql = remember { SqlViewModel() }
+    val sql = remember { DBViewModel() }
     LaunchedEffect(Unit) {
         sql.buscarMateriasPorDNI("")
     }
